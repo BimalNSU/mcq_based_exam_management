@@ -14,3 +14,8 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Auth::routers();
+Route::get('/admin','AdminController@index')->name('admin')->middleware('admin');
+Route::get('/teacher','AdminController@index')->name('teacher')->middleware('teacher');
+Route::get('/student','AdminController@index')->name('student')->middleware('student');
