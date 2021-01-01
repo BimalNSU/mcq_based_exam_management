@@ -37,10 +37,17 @@
     </style>
 @endsection()        
 
-<a href="{{ url('/teacher/grade?id=1') }}">this is link</a>
+
 
 @section('content_area')
-    
+
+    @foreach($exams as $exam)
+        <ul>
+            <a href="{{ url('/teacher/grade?id='.$exam['id']) }}">{{$exam['name']}}</a>
+            <p>{{$exam['description']}}</p> 
+        </ul>   
+    @endforeach
+
 @endsection()
 
 @section('script_area')
