@@ -1,23 +1,48 @@
-@extends('layouts.app')
+@extends('master')
 
-@section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Dashboard') }}</div>
+ @section('title_area') 
+	 Dasboard
+ @endsection() 
+@section('style_area')
+    <style type="text/css">
+        .qpaper{
+            width:900px;
+            background-color:rgb(0,0,0,0.6);
+            margin:auto;
+            color:#FFFFFF;
+            padding:10px 0px 10px 10px; 
+            text-align:center; 
+            border-radius:15px 15px 0px 0px;
+            }
+            
+        .qbody{
+            width:900px;				
+            background-color:rgb(240, 240, 240);
+            margin:auto;				
+            padding:10px 0px 10px 10px; 
+            border-radius:15px 15px 0px 0px;
+            }
+            
+        .submit{
+            position:relative;
+            left:200px;
+            top:-37px;
+            line-height:40px;
+            width:180px;
+            border-radius:6px;
+            padding:0 22px;
+            font-size:16px;
+            color:#455;
+        }
+    </style>
+@endsection()        
 
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
+<a href="{{ url('/teacher/grade?id=1') }}">this is link</a>
 
-                    {{ __('Hello student, You are logged in!') }}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-@endsection
+@section('content_area')
+    
+@endsection()
+
+@section('script_area')
+    
+@endsection()
