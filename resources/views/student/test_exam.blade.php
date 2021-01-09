@@ -41,12 +41,14 @@
 
 @section('content_area')
 <?php $i =1 ?>
-    @foreach($exams as $exam)
+    @foreach($data as $a)
         <ul>
-        @if( $exam['id'] ==$i )
-            <a href="{{ url('/teacher/grade?id='.$exam['id']) }}">{{$exam['name']}}</a>
-            <p>{{$exam['description']}}</p> 
-        @endif
+            <li>{{$a['q_track_id']}}</li>
+            <span>Choices: </span>
+            @foreach($a['choices'] as $choice)
+                <li>{{$choice}}</li>    
+            @endforeach
+            <span>Answers:{{json_encode($a['answers'])}}</span>
         </ul>   
     @endforeach
 

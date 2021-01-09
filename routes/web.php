@@ -22,3 +22,5 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/admin','AdminController@index')->name('admin')->middleware('admin');
 Route::get('/teacher','TeacherController@index')->name('teacher')->middleware('teacher');
 Route::get('/student','StudentController@index')->name('student')->middleware('student');
+
+Route::get('/student/exam','StudentController@test_exam')->name('exam')->middleware('student');
