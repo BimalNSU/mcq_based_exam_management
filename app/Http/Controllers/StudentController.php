@@ -81,7 +81,6 @@ class StudentController extends Controller
         foreach($data as $value)
         {
             $data[$i]->choices = explode(",", $value->choices); //spliting all choices as array and store in that object
-            $data[$i]->answers = explode(",", $value->answers); //spliting all answers as array and store in that object
             $i++;           
         }                
         $data = json_encode($data);

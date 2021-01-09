@@ -48,7 +48,7 @@
             @foreach($a['choices'] as $choice)
                 <li>{{$choice}}</li>    
             @endforeach
-            <span>Answers:{{json_encode($a['answers'])}}</span>
+            <span>Answers: {{$a['answers']}}</span>
         </ul>   
     @endforeach
 
