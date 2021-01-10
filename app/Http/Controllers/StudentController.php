@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use json;
+// use json;
 use Illuminate\Support\Facades\DB;
-
+// use Auth;
 
 class StudentController extends Controller
 {
@@ -87,15 +87,18 @@ class StudentController extends Controller
         // var_dump($results);
         // echo "<br>".$results;
          $data  = json_decode($data,true);
-         return view('student.test_exam',['data' => $data]);  
-        // dd($results);
-        // echo ($results[0]['q_track_id']);
-        // print_r ($results[0]);
-        // echo $results[0]['q_track_id'];
-        // $resultArray = json_decode(json_encode($results), true);
-        // dd($resultArray);
-                  
+        //  return view('student.test_exam',['data' => $data]);  
+        // $user_id = auth()->user()->id;
+        // dd($data);      
+        $exam_track_id = 2;  
+        return redirect( url("/student/exam/$exam_track_id")  );     
        // $results = DB::select( DB::raw("SELECT * FROM some_table WHERE some_col = '$someVariable'") );
     }
+    public function test_exam2(Request $request)
+    {
+        $exam_id = (int)$request->exam_id;
+        dd($exam_id);
+        
 
+    }
 }

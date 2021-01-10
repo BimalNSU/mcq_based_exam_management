@@ -24,3 +24,4 @@ Route::get('/teacher','TeacherController@index')->name('teacher')->middleware('t
 Route::get('/student','StudentController@index')->name('student')->middleware('student');
 
 Route::get('/student/exam','StudentController@test_exam')->name('exam')->middleware('student');
+Route::get('/student/exam/{exam_id}','StudentController@test_exam2')->middleware('student');
