@@ -1,65 +1,55 @@
 @extends('master')
 
  @section('title_area') 
-	 Dasboard
+	 exam_info
  @endsection() 
 @section('style_area')
-    <style type="text/css">
-        .qpaper{
-            width:900px;
-            background-color:rgb(0,0,0,0.6);
-            margin:auto;
-            color:#FFFFFF;
-            padding:10px 0px 10px 10px; 
-            text-align:center; 
-            border-radius:15px 15px 0px 0px;
-            }
-            
-        .qbody{
-            width:900px;				
-            background-color:rgb(240, 240, 240);
-            margin:auto;				
-            padding:10px 0px 10px 10px; 
-            border-radius:15px 15px 0px 0px;
-            }
-            
-        .submit{
-            position:relative;
-            left:200px;
-            top:-37px;
-            line-height:40px;
-            width:180px;
-            border-radius:6px;
-            padding:0 22px;
-            font-size:16px;
-            color:#455;
-        }
-
+    <style>
+        .dashboard{
+				width:900px;
+				background-color:rgb(0,0,0,0.6);
+				margin:auto;
+				color:#FFFFFF;
+				padding:10px 0px 10px 10px; 
+				text-align:center; 
+				border-radius:15px 15px 0px 0px;
+				}
+			.details{
+				width:900px;
+				background-color:rgb(0,0,0,0.8);
+				margin:auto;
+				color:#FFFFFF;
+				text-align:center; 
+				padding:10px 0px 10px 10px; 
+				border-radius:15px 15px 0px 0px;
+				}
+				
+			}
 
     </style>
-@endsection()        
+@endsection() 
 
 
 @section('content_area')
-<div class="row">
-    <div class="col-xs-12">
-        <div class="box box-default">
-            <div class="box-header with-border">
-            </div>
-            <div class="box-body">
-                <a href="{{ url('teacher/exam/create') }}">
-                    <button type="button" class="btn btn-success mb-1" ><i class="fa fa-plus"></i></button>
-                </a>              
-            </div>
-        </div>
+    <div class="dashboard"><h1 align="left"> Exam name: {{$data['exam_info']['exam_name']}} </h1>
+                            <h3 align="left"> {{$data['exam_info']['exam_descriptions']}}</h3>
+    </div> 	
+    <div class="details">
+        <h3>Attempts allowed: {{$data['exam_info']['attempt_limit']}}</h3>
+        <h4>This quiz started {{$data['exam_info']['session_start_date']}}, {{$data['exam_info']['session_start_time']}}</h4>
+        <h4>This quiz closed {{$data['exam_info']['session_end_date']}}, {{$data['exam_info']['session_end_time']}}</h4>
+        <h4> Grading method: {{$data['exam_info']['grading_method']}}</h4> 
+        <h4> Time limits: {{$data['exam_info']['time_limit']}} minutes</h4> 
+        <button type="button" class="btn btn-primary"> Test attempt quiz now</button>			
     </div>
-</div>
+
+    
 
 <div class="row">
     <div class="col-xs-12">
         <div class="box">
             <div class="box-header">
-                <h3 class="box-title">exam list</h3>
+                <h3 class="box-title">exam question list</h3>
                 <div class="box-tools">
                     <div class="input-group input-group-sm" style="width: 150px;">
                         <input type="text" name="table_search" class="form-control pull-right" placeholder="Search">
@@ -74,18 +64,16 @@
             <div class="box-body table-responsive no-padding">
                 <table class="table table-hover" id="exam_table">
                     <tr>
-                        <th>ID</th>
-                        <th>exam name</th>
-                        <th>description</th>
+                        <th>question no</th>
+                        <th>question text</th>
                         <th>action</th>
                     </tr>
-                    @foreach($data as $value)
+                    @foreach($data['questions'] as $value)
                         <tr>
-                            <td>{{$value['exam_id']}}</td>
                             <td>
-                                <a href="{{url('/teacher/exam/view',$value['exam_id'])}}">{{$value['exam_name']}}</a>
+                                <a href="{{url('/teacher/exam/view',$value['q_track_id'])}}">{{$value['q_serial_no']}}</a>
                             </td>
-                            <td>{{$value['exam_descriptions']}}</td>
+                            <td>{{$value['q_text']}}</td>
                             <td>
                                 <a href= "{{url('/teacher/exam/edit_view',$value['exam_id'])}}"> 
                                     <button type="button" name="edit" id="{{$value['exam_id']}}" class="edit btn btn-success">
@@ -106,9 +94,8 @@
     </div>
 </div>
 
-
 @endsection()
 
-@section('script_area')
-    
+
+@section('script_area')    
 @endsection()

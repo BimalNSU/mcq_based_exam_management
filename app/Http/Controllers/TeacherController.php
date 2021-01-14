@@ -227,20 +227,33 @@ class TeacherController extends Controller
     public function exam_info(Request $request)
     {        
         $exam_id = (int)$request->exam_id;
-        $sqlQuery = "SELECT exam_name,exam_descriptions,session_start,session_end,time_limit,attempt_limit,grading_method 
+        $sqlQuery = "SELECT exam_name,exam_descriptions,
+                    DATE(session_start) as session_start_date,TIME(session_start) as session_start_time,
+                    DATE(session_end) as session_end_date,TIME(session_end) as session_end_time,
+                    time_limit,attempt_limit,grading_method 
                     FROM exams
-                    WHERE exam_id = '$exam_id'";
+                    WHERE exam_id = $exam_id";
         $exam_info = DB::select(DB::raw($sqlQuery));
+        $exam_info = json_decode(json_encode($exam_info),true);
+        $exam_info = $exam_info[0];
+
+        $exam_info['session_start_date'] = Carbon::parse( $exam_info["session_start_date"])->format('d F y');
+        $exam_info['session_end_date'] = Carbon::parse( $exam_info["session_end_date"])->format('d F y');
         
+        // 24-hour time to 12-hour time with am,pm
+        $exam_info['session_start_time'] = Carbon::parse( $exam_info['session_start_time'])->format('h:i a') ;
+        $exam_info['session_end_time'] = Carbon::parse( $exam_info['session_end_time'])->format('h:i a');
+
         $sqlQuery = "SELECT q_track_id, q_serial_no, q_text 
                     FROM exam_questions
-                    WHERE exam_id = '$exam_id'";
+                    WHERE exam_id = $exam_id";
         $questions = DB::select(DB::raw($sqlQuery));
         $questions = json_decode(json_encode($questions),true);
 
         $data = array( 'exam_info' => $exam_info,
                         'questions' => $questions
-                    );        
+                    );    
+        // dd($exam_info);                        
         return view('teacher.exam_info', ['data' => $data]);        
     }
 
