@@ -32,14 +32,15 @@ class TeacherController extends Controller
     public function create_exam_to_course(Request $request)
     {
         $rules = array(
-            'exam_name' => 'required',
-            'attempt_limit' => 'required',
+            'exam_name' => 'required|string|max:20',
+            'exam_descriptions' => 'required|string|max:100',
+            'attempt_limit' => 'required|int',
             'session_start_date' => 'required',
             'session_start_time' => 'required',
             'session_end_date' => 'required',
             'session_end_time' => 'required',
-            'time_limit' => 'required',
-            'grading_method' => 'required'
+            'time_limit' => 'required|int',
+            'grading_method' => 'required|string|max:20'
         );
 
         // getting json data
@@ -140,15 +141,17 @@ class TeacherController extends Controller
     public function update_exam_of_course(Request $request)
     {        
         $rules = array(
-            'exam_name' => 'required',
-            'attempt_limit' => 'required',
+            'exam_name' => 'required|string|max:20',
+            'exam_descriptions' => 'required|string|max:100',
+            'attempt_limit' => 'required|int',
             'session_start_date' => 'required',
             'session_start_time' => 'required',
             'session_end_date' => 'required',
             'session_end_time' => 'required',
-            'time_limit' => 'required',
-            'grading_method' => 'required'
+            'time_limit' => 'required|int',
+            'grading_method' => 'required|string|max:20'
         );
+
 
         // getting json data
         $data = $request->all();
