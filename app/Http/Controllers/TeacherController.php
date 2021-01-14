@@ -129,9 +129,10 @@ class TeacherController extends Controller
         $data['session_start_date'] = Carbon::parse( $data["session_start_date"])->format('d/m/Y');
         $data['session_end_date'] = Carbon::parse( $data["session_end_date"])->format('d/m/Y');
         
-        // 24-hour time to 12-hour time 
-        $data['session_start_time'] = Carbon::parse( $data['session_start_time'])->format('h:i') ;
-        $data['session_end_time'] = Carbon::parse( $data['session_end_time'])->format('h:i');
+        // 24-hour time to 12-hour time with am,pm
+        $data['session_start_time'] = Carbon::parse( $data['session_start_time'])->format('h:i a') ;
+        $data['session_end_time'] = Carbon::parse( $data['session_end_time'])->format('h:i a');
+        // echo date('g:i a', strtotime('23:45'));  //it is working
         // dd($data);
         return view('teacher.edit_exam',['data' => $data ]);
     }
@@ -175,7 +176,7 @@ class TeacherController extends Controller
         $session_end = $data['session_end_date'].' '.$data['session_end_time'];
         $time_limit = $data['time_limit'];
         $grading_method = $data['grading_method'];        
-// dd($session_start);
+
         $sqlQuery = "UPDATE exams
                     SET exam_name = '$exam_name',
                         exam_descriptions = '$descriptions',
