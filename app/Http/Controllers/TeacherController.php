@@ -137,8 +137,7 @@ class TeacherController extends Controller
     }
 
     public function update_exam_of_course(Request $request)
-    {
-
+    {        
         $rules = array(
             'exam_name' => 'required',
             'attempt_limit' => 'required',
@@ -160,19 +159,27 @@ class TeacherController extends Controller
             return response()->json(['errors' => $error->errors()->all()]);
         }
 
-        $exam_id = $data['exam_id'];
+        $exam_id = (int)$request->exam_id;
         $exam_name = $data['exam_name'];
-        $descriptions = $data['descriptions'];
-        $attempts_limit = $data['attempts_limit'];
+        $descriptions = $data['exam_descriptions'];
+        $attempt_limit = $data['attempt_limit'];
+        
+        $data["session_start_date"] = Carbon::parse( $data["session_start_date"])->format('Y-m-d');
+        $data['session_end_date'] = Carbon::parse( $data["session_end_date"])->format('Y-m-d');
+        // 12-hour time to 24-hour time conversion
+        $data['session_start_time'] = Carbon::parse( $data['session_start_time'])->format('H:i') ;
+         // 12-hour time to 24-hour time conversion
+         $data['session_end_time'] = Carbon::parse( $data['session_end_time'])->format('H:i') ;
+
         $session_start = $data['session_start_date'] .' '.$data['session_start_time'];        
         $session_end = $data['session_end_date'].' '.$data['session_end_time'];
         $time_limit = $data['time_limit'];
         $grading_method = $data['grading_method'];        
-
+// dd($session_start);
         $sqlQuery = "UPDATE exams
-                    SET item_name = '$exam_name',
-                        descriptions = '$descriptions',
-                        attempt_limit = $attempts_limit,
+                    SET exam_name = '$exam_name',
+                        exam_descriptions = '$descriptions',
+                        attempt_limit = $attempt_limit,
                         session_start = '$session_start',
                         session_end = '$session_end',
                         time_limit = $time_limit,
@@ -180,7 +187,7 @@ class TeacherController extends Controller
                     WHERE exam_id = $exam_id;";
         DB::beginTransaction();
         try{ 
-            $affected = DB::update(DB::row($sqlQuery));
+            $affected = DB::update($sqlQuery);
             DB::commit();
         }
         catch(Exception $e)

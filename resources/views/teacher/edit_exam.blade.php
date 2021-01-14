@@ -48,13 +48,12 @@
 <div class="details">
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Create exam</h3>
+            <h3 class="box-title">Update exam</h3>
         </div>
         <!-- /.box-header -->
         <div class="box-body">
-        <form action="{{url('teacher/exam/update')}}" method="POST">
-        @csrf
-        
+        <form action="{{url('teacher/exam/info/update',$data['exam_id'] )}}" method="POST">
+        @csrf        
             <div class="form-group row">
                 <label for="inputEmail3" class="col-sm-2 control-label">Exam name</label>
                 <div class="col-sm-10">
