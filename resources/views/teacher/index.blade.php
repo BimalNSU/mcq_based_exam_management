@@ -85,7 +85,7 @@
                             <td>{{$value['exam_name']}}</td>
                             <td>{{$value['exam_descriptions']}}</td>
                             <td>
-                                <a href= "{{url('/teacher/exam/info',$value['exam_id'])}}"> 
+                                <a href= "{{url('/teacher/exam/edit_view',$value['exam_id'])}}"> 
                                     <button type="button" name="edit" id="{{$value['exam_id']}}" class="edit btn btn-success">
                                         <i class="fa fa-pencil"></i>
                                     </button>
