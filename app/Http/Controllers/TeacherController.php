@@ -3,13 +3,30 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Validator;
 
 class TeacherController extends Controller
 {
     public function index()
     {
-        return view('teacher.index');
+        // return view('teacher.index');
+      
+        $sqlQuery = "SELECT exam_id,exam_name, exam_descriptions 
+                    FROM exams ";
+        $result = DB::select(DB::raw($sqlQuery));
+        // $result = DB::select($sqlQuery);
+        $data = json_encode($result);
+        $data  = json_decode($data,true);   //store data in array
+
+        return view('teacher.index', ['data' => $data]);
+        
+    }
+
+    public function create_exam_page()
+    {
+        return view('teacher.create_exam');
     }
 
     public function create_exam_to_course(Request $request)
@@ -29,7 +46,15 @@ class TeacherController extends Controller
         $data = $request->all();
 
         $error = Validator::make($request->all(), $rules);
-
+        $data['session_start_date'] = Carbon::parse( $data["session_start_date"])->format('Y-m-d');
+        $data['session_end_date'] = Carbon::parse( $data["session_end_date"])->format('Y-m-d');
+        // 12-hour time to 24-hour time conversion
+        $data['session_start_time'] = Carbon::parse( $data['session_start_time'])->format('H:i') ;
+         // 12-hour time to 24-hour time conversion
+         $data['session_end_time'] = Carbon::parse( $data['session_end_time'])->format('H:i') ;
+        
+        // dd( Carbon::createFromFormat('Y-m-d', $data['session_start_date'])->toDateTimeString() );
+        // dd($request->all());
         if($error->fails())
         {
             return response()->json(['errors' => $error->errors()->all()]);
@@ -38,18 +63,18 @@ class TeacherController extends Controller
         //extracting json data
         //dd($data);
         $exam_name = $data['exam_name'];
-        $descriptions = $data['descriptions'];
-        $attempts_limit = $data['attempts_limit'];
+        $descriptions = $data['exam_descriptions'];
+        $attempts_limit = $data['attempt_limit'];
         $session_start = $data['session_start_date'] .' '.$data['session_start_time'];
-        $session_start = new DateTime($session_start);
+        // $session_start = new DateTime($session_start);
         $session_end = $data['session_end_date'].' '.$data['session_end_time'];
-        $session_end = new DateTime($session_end);
+        // $session_end = new DateTime($session_end);
         $time_limit = $data['time_limit'];
         $grading_method = $data['grading_method'];
         $created_by = auth()->user()->id;
         $created_on = Carbon::now('Asia/Dhaka');
        
-        $sqlQuery = "INSERT INTO exams (exam_name,exam_descriptions,session_start,session_end,time_limit,attempt_limit,created_by,created_on)
+        $sqlQuery = "INSERT INTO exams (exam_name,exam_descriptions,session_start,session_end,time_limit,attempt_limit,grading_method,created_by,created_on)
                     VALUES('$exam_name','$descriptions','$session_start', '$session_end',$time_limit, $attempts_limit, '$grading_method', $created_by, '$created_on');";
         
         DB::beginTransaction();
@@ -73,17 +98,42 @@ class TeacherController extends Controller
 
     public function get_course_exams(Request $request)
     {
-        if($request->ajax())
+        if(!$request->ajax())
         {
             $sqlQuery = "SELECT exam_id,exam_name, exam_descriptions 
                         FROM exams ";
             $result = DB::select(DB::raw($sqlQuery));
             // $result = DB::select($sqlQuery);
             $data = json_encode($result);
-            $data  = json_decode($data,true);   //store data in array
+            $data  = json_decode($data,true);   //store data in array           
 
            return view('teacher.index', ['data' => $data]);
         }
+    }
+
+    public function get_exam_data(Request $request)
+    {
+        $exam_id = (int)$request->exam_id;
+        // $exam_id = (int)$request->input('exam_id');
+        $sqlQuery = "SELECT exam_id,exam_name,exam_descriptions,
+                    DATE(session_start) as session_start_date,TIME(session_start) as session_start_time,
+                    DATE(session_end) as session_end_date,TIME(session_end) as session_end_time,
+                    time_limit,attempt_limit,grading_method
+                    FROM exams
+                    WHERE exam_id= '$exam_id' ;";
+        //$result = DB::select(DB::raw($sqlQuery));
+        $result = DB::select($sqlQuery);
+        $data = json_encode($result);
+        $data  = json_decode($data,true);   //store data in array
+        $data = $data[0];        
+        $data['session_start_date'] = Carbon::parse( $data["session_start_date"])->format('d/m/Y');
+        $data['session_end_date'] = Carbon::parse( $data["session_end_date"])->format('d/m/Y');
+        
+        // 24-hour time to 12-hour time 
+        $data['session_start_time'] = Carbon::parse( $data['session_start_time'])->format('h:i') ;
+        $data['session_end_time'] = Carbon::parse( $data['session_end_time'])->format('h:i');
+        // dd($data);
+        return view('teacher.edit_exam',['data' => $data ]);
     }
 
     public function update_exam_of_course(Request $request)
@@ -158,6 +208,7 @@ class TeacherController extends Controller
             $errorCode = $e->errorInfo[1];         
             return $e;
         }
+        return response()->json(['response' => 'Delete successfully']);
     }
 
 
