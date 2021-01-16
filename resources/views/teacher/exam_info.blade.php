@@ -51,6 +51,9 @@
             <div class="box-header">
                 <h3 class="box-title">exam question list</h3>
                 <div class="box-tools">
+                    <a href="{{ url('teacher/exam/question/create',$data['exam_info']['exam_id']) }}">
+                        <button type="button" class="btn btn-success mb-1" ><i class="fa fa-plus"></i></button>
+                    </a> 
                     <div class="input-group input-group-sm" style="width: 150px;">
                         <input type="text" name="table_search" class="form-control pull-right" placeholder="Search">
 
@@ -70,17 +73,15 @@
                     </tr>
                     @foreach($data['questions'] as $value)
                         <tr>
-                            <td>
-                                <a href="{{url('/teacher/exam/view',$value['q_track_id'])}}">{{$value['q_serial_no']}}</a>
-                            </td>
+                            <td>{{$value['q_serial_no']}}</td>
                             <td>{{$value['q_text']}}</td>
                             <td>
-                                <a href= "{{url('/teacher/exam/edit_view',$value['exam_id'])}}"> 
-                                    <button type="button" name="edit" id="{{$value['exam_id']}}" class="edit btn btn-success">
+                                <a href= "{{url('/teacher/exam/question/edit_view',$value['q_track_id'])}}"> 
+                                    <button type="button" name="edit" id="{{$value['q_track_id']}}" class="edit btn btn-success">
                                         <i class="fa fa-pencil"></i>
                                     </button>
                                 </a>
-                                <button type="button" name="delete" id="{{$value['exam_id']}}" class="delete btn btn-danger">
+                                <button type="button" name="delete" id="{{$value['q_track_id']}}" class="delete btn btn-danger">
                                     <i class="fa fa-trash"></i>
                                 </button>                           
                             </td>
