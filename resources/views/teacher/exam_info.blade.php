@@ -51,7 +51,7 @@
             <div class="box-header">
                 <h3 class="box-title">exam question list</h3>
                 <div class="box-tools">
-                    <a href="{{ url('teacher/exam/question/create',$data['exam_info']['exam_id']) }}">
+                    <a href="{{ route('createQuestionPage',$data['exam_info']['exam_id']) }}">
                         <button type="button" class="btn btn-success mb-1" ><i class="fa fa-plus"></i></button>
                     </a> 
                     <div class="input-group input-group-sm" style="width: 150px;">
@@ -76,7 +76,7 @@
                             <td>{{$value['q_serial_no']}}</td>
                             <td>{{$value['q_text']}}</td>
                             <td>
-                                <a href= "{{url('/teacher/exam/question/edit_view',$value['q_track_id'])}}"> 
+                                <a href= "{{route('questionEditView', [$data['exam_info']['exam_id'],$value['q_track_id'] ] )}}"> 
                                     <button type="button" name="edit" id="{{$value['q_track_id']}}" class="edit btn btn-success">
                                         <i class="fa fa-pencil"></i>
                                     </button>

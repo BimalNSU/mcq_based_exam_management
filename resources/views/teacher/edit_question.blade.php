@@ -112,8 +112,10 @@
         json_object.options = options;
         json_object.answers = answers;
         // const queryString = window.location.search;
-        // console.log(queryString);
-        $.get("{{ route('updateQuestion',['q_track_id' => '']) }}/" + 1, {data: JSON.stringify(json_object) } , function(data){
+//         // console.log(queryString);
+        let exam_id = {!! json_encode($exam_id) !!};
+        let q_track_id = {!! json_encode($q_track_id) !!};
+        $.get("{{ route('updateQuestion', [':exam_id',':q_track_id']) }}".replace(':exam_id', exam_id).replace(':q_track_id',q_track_id), {data: JSON.stringify(json_object) } , function(data){
                 // Display the returned data in console
                 console.log(data);
             });
@@ -128,9 +130,9 @@
 
     $(document).ready(function(){
 
-        // let q_details = {!! json_encode($question) !!};
+        // let q_details = {!! json_encode($q_track_id) !!};
         // console.log(q_details);
-        // console.log(q_details.options);
+        // // console.log(q_details.options);
 
               
     });      

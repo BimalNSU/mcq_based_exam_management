@@ -65,12 +65,12 @@ class TeacherController extends Controller
         //dd($data);
         $exam_name = $data['exam_name'];
         $descriptions = $data['exam_descriptions'];
-        $attempts_limit = $data['attempt_limit'];
+        $attempts_limit = (int)$data['attempt_limit'];
         $session_start = $data['session_start_date'] .' '.$data['session_start_time'];
         // $session_start = new DateTime($session_start);
         $session_end = $data['session_end_date'].' '.$data['session_end_time'];
         // $session_end = new DateTime($session_end);
-        $time_limit = $data['time_limit'];
+        $time_limit = (int)$data['time_limit'];
         $grading_method = $data['grading_method'];
         $created_by = auth()->user()->id;
         $created_on = Carbon::now('Asia/Dhaka');
@@ -166,7 +166,7 @@ class TeacherController extends Controller
         $exam_id = (int)$request->exam_id;
         $exam_name = $data['exam_name'];
         $descriptions = $data['exam_descriptions'];
-        $attempt_limit = $data['attempt_limit'];
+        $attempt_limit = (int)$data['attempt_limit'];
         
         $data["session_start_date"] = Carbon::parse( $data["session_start_date"])->format('Y-m-d');
         $data['session_end_date'] = Carbon::parse( $data["session_end_date"])->format('Y-m-d');
@@ -177,7 +177,7 @@ class TeacherController extends Controller
 
         $session_start = $data['session_start_date'] .' '.$data['session_start_time'];        
         $session_end = $data['session_end_date'].' '.$data['session_end_time'];
-        $time_limit = $data['time_limit'];
+        $time_limit = (int)$data['time_limit'];
         $grading_method = $data['grading_method'];        
 
         $sqlQuery = "UPDATE exams
@@ -253,14 +253,14 @@ class TeacherController extends Controller
         $data = array( 'exam_info' => $exam_info,
                         'questions' => $questions
                     );    
-        // dd($exam_info);                        
+        // dd($data);                        
         return view('teacher.exam_info', ['data' => $data]);        
     }
 
     public function create_question_page(Request $request)
     {
         $exam_id = (int)$request->exam_id;
-        return view('teacher.create_question');
+        return view('teacher.create_question',['exam_id'=>$exam_id]);
     }
 
     public function create_question_to_exam(Request $request)
@@ -277,15 +277,16 @@ class TeacherController extends Controller
 
         // getting json data
         $question_data = $request->all();
+        $exam_id = $request->exam_id;
         $question_data = json_decode($question_data['data'],true);
-        // $error = Validator::make($request->all(), $rules);
+        // // $error = Validator::make($request->all(), $rules);
+        //return $question_data['q_text'];
+        // // if($error->fails())
+        // // {
+        // //     return response()->json(['errors' => $error->errors()->all()]);
+        // // }
 
-        // if($error->fails())
-        // {
-        //     return response()->json(['errors' => $error->errors()->all()]);
-        // }
-
-        $exam_id = (int)$request->exam_id;
+        // $exam_id = (int)$question_data->exam_id;
         $q_serial_no = (int)$question_data['q_serial_no'];
         $q_text = $question_data['q_text'];
 
@@ -327,7 +328,7 @@ class TeacherController extends Controller
             DB::insert($query3);
 
             DB::commit();
-            return response()->json(['success' => 'Data Added successfully.']);
+            return response()->json(['success' => 'New question is added successfully.']);
         }
         catch(Exception $e)
         {
@@ -344,38 +345,38 @@ class TeacherController extends Controller
 
     public function get_exam_questions_details(Request $request)
     {
-        $question = array(
-                        'exam_id'  =>1,
-                        'q_track_id'  =>1,
-                        'q_serial_no' => 1,
-                        'q_text' => 'this is question',                        
-                        'options' => array("a","b","c", "d"),
-                        'answers' => array( "a","c")                                        
-                    );
-// dd(json_encode($exams)) ;
-        return view('teacher.edit_question',['question'=> $question ]);
-        // return view('teacher.edit_question',['test'=> 'this is test' ]);
-        // if($request->ajax())
-        // {
-        //     $q_track_id = (int)$request->q_track_id;
-        //     $sqlQuery = " select x.*,  GROUP_CONCAT(answers) AS answers
-        //                     from	(SELECT q_track_id,q_serial_no,q_text
-        //                                     GROUP_CONCAT(q_options) AS options	 
-        //                             FROM  exam_questions NATURAL JOIN exam_questions_options
-        //                             WHERE q_track_id = $q_track_id
-        //                             GROUP BY q_track_id
-        //                             order by q_option_no) as x natural join exam_questions_answers        
-        //                     group by x.q_track_id ;";
-        //     $result = DB::select(DB::raw($sqlQuery));
-        //     $data = json_decode(json_encode($result),true);
-        //     // return $data;
-        //     return response()->json($data);
-        //     // $result = DB::select($sqlQuery);
- 
-        //     // $button = '<button type="button" name="edit" id="'.$item->item_id.'" class="edit btn btn-success"><i class="fa fa-pencil"></i></button>';
-        //     // $button .= '<br><br>';
-        //     // $button .= '<button type="button" name="delete" id="'.$item->item_id.'" class="delete btn btn-danger"><i class="fa fa-trash"></i></button>';
-        // }
+        $exam_id = (int)$request->exam_id;
+        $q_track_id = (int)$request->q_track_id;
+        // $question = array(
+        //                 'exam_id'  =>1,
+        //                 'q_track_id'  =>1,
+        //                 'q_serial_no' => 1,
+        //                 'q_text' => 'this is question',                        
+        //                 'options' => array("a","b","c", "d"),
+        //                 'answers' => array( "a","c")                                        
+        //             );
+
+        $q_track_id = (int)$request->q_track_id;
+        $sqlQuery = " select x.*,  GROUP_CONCAT(answers) AS answers
+                        from	(SELECT q_track_id,q_serial_no,q_text,
+                                        GROUP_CONCAT(q_options) AS options	 
+                                FROM  exam_questions NATURAL JOIN exam_questions_options
+                                WHERE q_track_id = $q_track_id) as x natural join exam_questions_answers;";
+        $result = DB::select(DB::raw($sqlQuery));
+        $result = $result[0];
+        $result->options = explode(",", $result->options); //spliting all options as array and store in that object
+        $result->answers = explode(",", $result->answers); //spliting all answers as array and store in that object
+        $question = json_decode(json_encode($result),true);
+        
+        // dd($question);
+        // return $data;
+        // return response()->json($question);
+        return view('teacher.edit_question',['question'=> $question,'exam_id'=> $exam_id, 'q_track_id'=> $q_track_id ]);
+        
+        // $button = '<button type="button" name="edit" id="'.$item->item_id.'" class="edit btn btn-success"><i class="fa fa-pencil"></i></button>';
+        // $button .= '<br><br>';
+        // $button .= '<button type="button" name="delete" id="'.$item->item_id.'" class="delete btn btn-danger"><i class="fa fa-trash"></i></button>';
+        
     }
 
     //need to work here 
@@ -393,7 +394,8 @@ class TeacherController extends Controller
 
         // getting json data
         $qestion_data = $request->all();
-
+        $exam_id = (int)$request->exam_id;
+        $q_track_id = (int)$request->q_track_id;
         // $error = Validator::make($request->all(), $rules);
 
         // if($error->fails())
@@ -407,43 +409,42 @@ class TeacherController extends Controller
         
          $question_data = json_decode($qestion_data['data'],true);
         //  return $question_data['q_text'];
-        $q_track_id = (int)$request->q_track_id;
         $q_serial_no = (int)$question_data['q_serial_no'];
         $q_text = $question_data['q_text'];
         
         $query1 = "UPDATE exam_questions
                     SET q_serial_no = $q_serial_no,
-                    SET q_text = '$q_text'
+                        q_text = '$q_text'
                     WHERE q_track_id = $q_track_id ;";
 
         $query2 = "DELETE 
                     FROM exam_questions_options                        
-                    WHERE q_track_id = $q_track_id;
-                    DELETE 
+                    WHERE q_track_id = $q_track_id;";
+        $query3 =   "DELETE 
                     FROM exam_questions_answers                        
                     WHERE q_track_id = $q_track_id;";
         
         $option = $question_data['options'][0];
-        $query3 = "INSERT INTO exam_questions (q_track_id, q_options)
+        $query4 = "INSERT INTO exam_questions_options (q_track_id, q_options)
                     values($q_track_id,'$option')";
         $length = count($question_data['options']);
         $i = 1;
         while( $i < $length )
         {
             $option = $question_data['options'][$i];
-            $query3 = $query3.",($q_track_id,'$option')";
+            $query4 = $query4.",($q_track_id,'$option')";
             $i++;
         }
 
         $answer = $question_data['answers'][0];
-        $query4 =    "INSERT INTO exam_questions_answers (q_track_id, answers)
+        $query5 =    "INSERT INTO exam_questions_answers (q_track_id, answers)
                         values($q_track_id,'$answer')";
         $length = count($question_data['answers']);
         $i = 1;
         while( $i < $length )
         {
             $answer = $question_data['answers'][$i];
-            $query4 = $query4 . ",($q_track_id,'$answer')";
+            $query5 = $query5 . ",($q_track_id,'$answer')";
             $i++;
         }
 
@@ -452,8 +453,9 @@ class TeacherController extends Controller
 
             $affected = DB::update($query1);
             $deleted1 = DB::delete($query2);
-            DB::insert($query3);
+            $deleted1 = DB::delete($query3);
             DB::insert($query4);
+            DB::insert($query5);
             DB::commit();
         }
         catch(Exception $e)

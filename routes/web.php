@@ -28,10 +28,10 @@ Route::GET('/teacher/exam/edit_view/{exam_id}','TeacherController@get_exam_data'
 Route::POST('teacher/exam/edit/{exam_id}','TeacherController@update_exam_of_course');
 Route::GET('/teacher/exam/view/{exam_id}','TeacherController@exam_info');
 
-Route::GET('teacher/exam/question/create/{exam_id}','TeacherController@create_question_page');
-Route::POST('teacher/exam/question/insert/{exam_id}','TeacherController@create_question_to_exam')->name('createQuestion');
-Route::GET('/teacher/exam/question/edit_view/{q_track_id}','TeacherController@get_exam_questions_details');
-Route::GET('teacher/exam/question/edit/{q_track_id}','TeacherController@update_question_of_exam')->name('updateQuestion');
+Route::GET('teacher/exam/{exam_id}/question/create','TeacherController@create_question_page')->name('createQuestionPage');
+Route::POST('teacher/exam/{exam_id}/question/insert/','TeacherController@create_question_to_exam')->name('createQuestion');
+Route::GET('/teacher/exam/{exam_id}/question/edit_view/{q_track_id}','TeacherController@get_exam_questions_details')->name('questionEditView');
+Route::GET('teacher/exam/{exam_id}/question/edit/{q_track_id}','TeacherController@update_question_of_exam')->name('updateQuestion');
 
 // Route::delete('teacher/exam/delete/{exam_id}','TeacherController@delete_exam_of_course')->name('deleteExam');
 
