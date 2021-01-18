@@ -87,9 +87,7 @@
 <script>
     function update_quation()
     {
-        // alert("last question no: "+ last_q_object.attr("id"));
         let json_object = Object();
-        // json_object.q_no = last_q_object.attr("id");    //store question's id
         let q_serial_no = $("#q_serial_no").val();
         let q_text = $("#q_text").val();
         json_object.q_serial_no = q_serial_no;
@@ -104,7 +102,6 @@
             {
                 options[index] = option;   //store one by one all options in array
             }
-            // console.log(option);
             if($(this).siblings("span").find('input[type="checkbox"]').prop("checked") == true)
             {
                 let answer = $(this).val();
@@ -113,18 +110,14 @@
                     answers.push(answer);    //store one by one all answers in array               
                 }
             }
-        // $.each($(last_q_object).find("div").children("input:checked"),function(index){
-            // json_array[index]= $(this).attr("value");   //stores all choices
         });
         json_object.options = options;
         json_object.answers = answers;
-        // const queryString = window.location.search;
-//         // console.log(queryString);
         let exam_id = {!! json_encode($exam_id) !!};
         let q_track_id = {!! json_encode($q_track_id) !!};
         $.post("{{ route('updateQuestion', [':exam_id',':q_track_id']) }}".replace(':exam_id', exam_id).replace(':q_track_id',q_track_id), {data: JSON.stringify(json_object) } , function(data){
                 // Display the returned data in console
-                console.log(data);
+                //console.log(data);
             let html = '';
             if(data.errors)
             {
@@ -141,22 +134,10 @@
                 html = '<div class="alert alert-success">' + data.success + '</div>';
             }
             $('#respond_result').html(html);
-        });          
-
-
-
-
-        // json_object.option_no = json_array;
-        // console.log(json_object);                    
+        });                           
     }  
 
-
-
     $(document).ready(function(){
-
-        // let q_details = {!! json_encode($q_track_id) !!};
-        // console.log(q_details);
-        // // console.log(q_details.options);
 
               
     });      
