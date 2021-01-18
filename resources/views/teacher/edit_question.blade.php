@@ -35,6 +35,7 @@
         </div>
         <!-- /.box-header -->    
         <div class="box-body">
+        <span id="respond_result"></span>
             <input type="hidden" name="_token" value="{{csrf_token() }}">
             <div class="form-group row">
                 <label for="inputEmail3" class="col-sm-2 control-label">question no</label>
@@ -98,13 +99,19 @@
         let answers = [];
         let json_array = [];
         $.each($("div textarea[name='options[]']"),function(index){                
-            let option = $(this).text();
-            options[index] = option;   //store one by one all options in array
+            let option = $(this).val();            
+            if(option != "")
+            {
+                options[index] = option;   //store one by one all options in array
+            }
             // console.log(option);
             if($(this).siblings("span").find('input[type="checkbox"]').prop("checked") == true)
             {
-                let answer = $(this).text();
-                answers.push(answer);    //store one by one all answers in array               
+                let answer = $(this).val();
+                if(answer != "")
+                {
+                    answers.push(answer);    //store one by one all answers in array               
+                }
             }
         // $.each($(last_q_object).find("div").children("input:checked"),function(index){
             // json_array[index]= $(this).attr("value");   //stores all choices
@@ -115,10 +122,27 @@
 //         // console.log(queryString);
         let exam_id = {!! json_encode($exam_id) !!};
         let q_track_id = {!! json_encode($q_track_id) !!};
-        $.get("{{ route('updateQuestion', [':exam_id',':q_track_id']) }}".replace(':exam_id', exam_id).replace(':q_track_id',q_track_id), {data: JSON.stringify(json_object) } , function(data){
+        $.post("{{ route('updateQuestion', [':exam_id',':q_track_id']) }}".replace(':exam_id', exam_id).replace(':q_track_id',q_track_id), {data: JSON.stringify(json_object) } , function(data){
                 // Display the returned data in console
                 console.log(data);
-            });
+            let html = '';
+            if(data.errors)
+            {
+                html = '<div class="alert alert-danger">';
+                console.log(data);
+                for(var count = 0; count < data.errors.length; count++)
+                {
+                    html += '<p>' + data.errors[count] + '</p>';
+                }
+                html += '</div>';
+            }
+            if(data.success)
+            {
+                html = '<div class="alert alert-success">' + data.success + '</div>';
+            }
+            $('#respond_result').html(html);
+        });          
+
 
 
 

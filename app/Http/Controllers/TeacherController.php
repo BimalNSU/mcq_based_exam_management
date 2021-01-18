@@ -383,32 +383,24 @@ class TeacherController extends Controller
     public function update_question_of_exam(Request $request)
     {
         $rules = array(
-            'question_no' => 'required',
-            'question' => 'required',
-            'option1' => 'required',
-            'option2' => 'required',
-            'option3' => 'required',
-            'option4' => 'required',
-            'answers' => 'required'
+            'q_serial_no' => 'required|int',
+            'q_text' => 'required|string|max:100',
+            'options' => 'required|array',
+            'answers' => 'required|array'          
         );
 
         // getting json data
-        $qestion_data = $request->all();
+        $question_data = $request->all();
+        // return $question_data;
         $exam_id = (int)$request->exam_id;
         $q_track_id = (int)$request->q_track_id;
-        // $error = Validator::make($request->all(), $rules);
-
-        // if($error->fails())
-        // {
-        //     return response()->json(['errors' => $error->errors()->all()]);
-        // }
-
-        // //extracting json data
-        // //dd($data);
-        //  $q_serial_no = $data['question'];
         
-         $question_data = json_decode($qestion_data['data'],true);
-        //  return $question_data['q_text'];
+         $question_data = json_decode($question_data['data'],true);
+         $error = Validator::make($question_data, $rules);
+         if($error->fails())
+        {
+            return response()->json(['errors' => $error->errors()->all()]);
+        }
         $q_serial_no = (int)$question_data['q_serial_no'];
         $q_text = $question_data['q_text'];
         
