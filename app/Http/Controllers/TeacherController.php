@@ -443,6 +443,7 @@ class TeacherController extends Controller
             DB::insert($query4);
             DB::insert($query5);
             DB::commit();
+            return response()->json(['success' => 'Question no ' . $q_serial_no . ' is updated successfully.']);
         }
         catch(Exception $e)
         {
