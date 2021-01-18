@@ -72,7 +72,7 @@
             <div class="form-group row">
                 <label for="inputPassword3" class="col-sm-2 control-label">Attempts allow</label>		
                 <div class="col-sm-2">
-                    <input type="number" name="attempt_limit" oninput="validity.valid|| (value='');" class="form-control" placeholder="Attempts allow">
+                    <input class="form-control js-input-absint" type="number" step="1" min="1"  max="150" name="attempt_limit" value="1" placeholder="Attempts allow">
                 </div>
             </div>
             
@@ -119,7 +119,7 @@
             <div class="form-group row">
                 <label for="inputPassword3" class="col-sm-2 control-label">Time limits</label>
                 <div class="col-sm-3">
-                    <input type="number" name="time_limit" oninput="validity.valid||(value='');" class="form-control" placeholder="enter time limit in minutes">
+                    <input class="form-control js-input-absint" type="number" name="time_limit" step="1" min="10"  max="150" value="1" placeholder="enter time limit in minutes">
                 </div>
             </div>				
 
@@ -143,7 +143,6 @@
         <!-- /.box-footer -->	
     </div>
 </div>
-
 @endsection()
 
 @section('script_area')
@@ -174,5 +173,45 @@
 		})
 	})
 </script>
-    
+<script>
+    var $inputAbsint = $('.js-input-absint');
+
+    if ($inputAbsint.length) {
+
+        $(document).on('keypress', '.js-input-absint', function (event) {
+
+            var allowed = /^[0-9]|Arrow(Left|Right)|Backspace|Home|End|Delete$/;
+            return allowed.test(event.key);
+
+        }).on('focusout paste', '.js-input-absint', function () {
+
+            var $input = $(this);
+            var defaultValue = this.defaultValue || $input.attr('min');
+            // Important(!): Timeout for the updated value
+            setTimeout(function () {
+                var current = $input.val();
+                var regexNumbers = new RegExp(/^[0-9]*$/, 'g');
+                var isNumbersOnly = regexNumbers.test(current);
+                // Clear wrong value (not numbers)
+                if ((current === '' || !isNumbersOnly) && defaultValue.length) {
+                    $input.val(defaultValue);
+                    current = defaultValue;
+                }
+                // Min/Max
+                var min = parseInt($input.attr('min'), 10);
+                var max = parseInt($input.attr('max'), 10);
+                var currentInt = parseInt(current, 10);
+                if (!isNaN(min) && !isNaN(currentInt) && currentInt < min) {
+                    $input.val(min);
+                }
+                if (!isNaN(max) && !isNaN(currentInt) && currentInt > max) {
+                    $input.val(max);
+                }
+            }, 100);
+
+        });
+
+    }
+
+</script>    
 @endsection()
