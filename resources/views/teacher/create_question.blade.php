@@ -113,14 +113,18 @@
         let json_array = [];
         $.each($("div textarea[name='options[]']"),function(index){                
             let option = $(this).val();
-            options[index] = option;   //store one by one all options in array
-            // console.log(option);
-            if($(this).siblings("span").find('input[type="checkbox"]').prop("checked") == true)
+            if(option != "")
             {
-                let answer = $(this).val();
-                // alert(answer);
-                answers.push(answer);    //store one by one all answers in array               
+                options[index] = option;   //store one by one all options in array
+                // console.log(option);
+                if($(this).siblings("span").find('input[type="checkbox"]').prop("checked") == true)
+                {
+                    let answer = option;
+                    // alert(answer);
+                    answers.push(answer);    //store one by one all answers in array               
+                }
             }
+            
         });
         json_object.options = options;
         json_object.answers = answers;

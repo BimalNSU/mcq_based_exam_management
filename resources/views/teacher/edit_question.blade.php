@@ -122,7 +122,7 @@
             if(data.errors)
             {
                 html = '<div class="alert alert-danger">';
-                console.log(data);
+                // console.log(data);
                 for(var count = 0; count < data.errors.length; count++)
                 {
                     html += '<p>' + data.errors[count] + '</p>';

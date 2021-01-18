@@ -265,28 +265,23 @@ class TeacherController extends Controller
 
     public function create_question_to_exam(Request $request)
     {
-        // $rules = array(
-        //     'question_no' => 'required',
-        //     'question' => 'required',
-        //     'option1' => 'required',
-        //     'option2' => 'required',
-        //     'option3' => 'required',
-        //     'option4' => 'required',
-        //     'answers' => 'required'
-        // );
+        $rules = array(
+            'q_serial_no' => 'required|int',
+            'q_text' => 'required|string|max:100',
+            'options' => 'required|array',
+            'answers' => 'required|array'          
+        );
 
         // getting json data
         $question_data = $request->all();
-        $exam_id = $request->exam_id;
+        $exam_id = (int)$request->exam_id;
         $question_data = json_decode($question_data['data'],true);
-        // // $error = Validator::make($request->all(), $rules);
-        //return $question_data['q_text'];
-        // // if($error->fails())
-        // // {
-        // //     return response()->json(['errors' => $error->errors()->all()]);
-        // // }
-
-        // $exam_id = (int)$question_data->exam_id;
+        $error = Validator::make($question_data, $rules);
+        
+        if($error->fails())
+        {
+            return response()->json(['errors' => $error->errors()->all()]);
+        }
         $q_serial_no = (int)$question_data['q_serial_no'];
         $q_text = $question_data['q_text'];
 
@@ -379,7 +374,6 @@ class TeacherController extends Controller
         
     }
 
-    //need to work here 
     public function update_question_of_exam(Request $request)
     {
         $rules = array(
