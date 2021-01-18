@@ -323,7 +323,7 @@ class TeacherController extends Controller
             DB::insert($query3);
 
             DB::commit();
-            return response()->json(['success' => 'New question is added successfully.']);
+            return response()->json(['success' => 'New question no ' . $q_serial_no . ' is added successfully.']);
         }
         catch(Exception $e)
         {
@@ -462,14 +462,6 @@ class TeacherController extends Controller
     {
         $sqlQuery = "DELETE 
                     FROM exam_questions
-                    WHERE q_track_id = $q_track_id;
-
-                    DELETE
-                    FROM exam_questions_options
-                    WHERE q_track_id = $q_track_id;
-
-                    DELETE
-                    FROM exam_questions_answers
                     WHERE q_track_id = $q_track_id;";   
         DB::beginTransaction();
         try{ 
