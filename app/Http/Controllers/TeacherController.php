@@ -378,8 +378,8 @@ class TeacherController extends Controller
     public function update_question_of_exam(Request $request)
     {
         $rules = array(
-            'q_serial_no' => 'required|int',
-            'q_text' => 'required|string|max:100',
+            'question_no' => 'required|int',
+            'question_text' => 'required|string|max:100',
             'options' => 'required|array',
             'options.*' => 'distinct',
             'answers' => 'required|array'          
@@ -397,8 +397,8 @@ class TeacherController extends Controller
         {
             return response()->json(['errors' => $error->errors()->all()]);
         }
-        $q_serial_no = (int)$question_data['q_serial_no'];
-        $q_text = $question_data['q_text'];
+        $q_serial_no = (int)$question_data['question_no'];
+        $q_text = $question_data['question_text'];
         
         $query1 = "UPDATE exam_questions
                     SET q_serial_no = $q_serial_no,

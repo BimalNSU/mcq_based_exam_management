@@ -86,10 +86,10 @@
     function update_quation()
     {
         let json_object = Object();
-        let q_serial_no = $("#q_serial_no").val();
-        let q_text = $("#q_text").val();
-        json_object.q_serial_no = q_serial_no;
-        json_object.q_text = q_text;
+        let question_no = $("#q_serial_no").val();
+        let question_text = $("#q_text").val();
+        json_object.question_no = question_no;
+        json_object.question_text = question_text;
         
         let options = [];
         let answers = [];
