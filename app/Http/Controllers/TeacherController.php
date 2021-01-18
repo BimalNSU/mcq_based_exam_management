@@ -266,8 +266,8 @@ class TeacherController extends Controller
     public function create_question_to_exam(Request $request)
     {
         $rules = array(
-            'q_serial_no' => 'required|int',
-            'q_text' => 'required|string|max:100',
+            'question_no' => 'required|int',
+            'question_text' => 'required|string|max:100',
             'options' => 'required|array',
             'options.*' => 'distinct',
             'answers' => 'required|array'          
@@ -283,8 +283,8 @@ class TeacherController extends Controller
         {
             return response()->json(['errors' => $error->errors()->all()]);
         }
-        $q_serial_no = (int)$question_data['q_serial_no'];
-        $q_text = $question_data['q_text'];
+        $q_serial_no = (int)$question_data['question_no'];
+        $q_text = $question_data['question_text'];
 
         $query1 = "INSERT INTO exam_questions (exam_id,q_serial_no,q_text)
                     values($exam_id,$q_serial_no,'$q_text');";
