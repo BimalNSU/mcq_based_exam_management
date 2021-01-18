@@ -269,6 +269,7 @@ class TeacherController extends Controller
             'q_serial_no' => 'required|int',
             'q_text' => 'required|string|max:100',
             'options' => 'required|array',
+            'options.*' => 'distinct',
             'answers' => 'required|array'          
         );
 
@@ -380,6 +381,7 @@ class TeacherController extends Controller
             'q_serial_no' => 'required|int',
             'q_text' => 'required|string|max:100',
             'options' => 'required|array',
+            'options.*' => 'distinct',
             'answers' => 'required|array'          
         );
 
@@ -461,17 +463,15 @@ class TeacherController extends Controller
 
     public function delete_exam_question($q_track_id)
     {
+        // return $q_track_id;
         $sqlQuery = "DELETE 
                     FROM exam_questions
-                    WHERE q_track_id = $q_track_id;";   
-        DB::beginTransaction();
+                    WHERE q_track_id = $q_track_id;";        
         try{ 
-            $deleted = DB::delete($sqlQuery);
-            DB::commit();
+            $deleted = DB::delete($sqlQuery);            
         }
         catch(Exception $e)
         {
-            DB::rollback();
             $errorCode = $e->errorInfo[1];
             // if($errorCode == 1062)
             // {

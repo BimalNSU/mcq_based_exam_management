@@ -77,11 +77,11 @@
                             <td>{{$value['q_text']}}</td>
                             <td>
                                 <a href= "{{route('questionEditView', [$data['exam_info']['exam_id'],$value['q_track_id'] ] )}}"> 
-                                    <button type="button" name="edit" id="{{$value['q_track_id']}}" class="edit btn btn-success">
+                                    <button type="button" name="edit" class="edit btn btn-success">
                                         <i class="fa fa-pencil"></i>
                                     </button>
                                 </a>
-                                <button type="button" name="delete" id="{{$value['q_track_id']}}" class="delete btn btn-danger">
+                                <button type="button" name="delete" value="{{$value['q_track_id']}}" class="delete btn btn-danger">
                                     <i class="fa fa-trash"></i>
                                 </button>                           
                             </td>
@@ -95,8 +95,52 @@
     </div>
 </div>
 
+<div id="confirmModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-confirm-title">Confirmation</h2>
+            </div>
+            <div class="modal-body">
+                <h4 align="center" id="delete_result"style="margin:0;">Are you sure you want to remove this data?</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" name="confirm_btn" id="confirm_delete_btn" class="btn btn-danger">Confirm</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection()
 
 
-@section('script_area')    
+@section('script_area')
+<script>
+    let q_track_id;
+    //dynamically created 'delete button' on click event function
+    $(document).on('click', '.delete', function() {
+            q_track_id = $(this).attr("value");     //get stored q_track_id
+            $('#delete_btn').text('Delete'); //rename 'ok button' as 'Delete button'
+            $('#confirmModal').modal('show');
+        });
+
+     //predefine 'ok button' click event function
+     $('#confirm_delete_btn').click(function() {
+            
+            $.ajax({
+                url: "{{ route('deleteExamQuestion', ['q_track_id' => '']) }}/" + q_track_id,
+                method:"DELETE",
+                beforeSend: function() {
+                    $('#confirm_delete_btn').text('Deleting...');
+                },
+                success: function(data) {
+                    setTimeout(function() {
+                        $('#confirmModal').modal('hide');                        
+                    }, 500);
+                    location.reload();  //page refresh
+                }
+            })
+        });
+</script>    
 @endsection()

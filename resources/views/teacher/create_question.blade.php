@@ -58,7 +58,7 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label class="col-sm-2 control-label">Option 1</label>
+                <label class="col-sm-2 control-label">Option 2</label>
                 <div class="input-group">
                     <span class="input-group-addon">                            
                         <input type="checkbox" name="answers[]">
@@ -67,7 +67,7 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label class="col-sm-2 control-label">Option 1</label>
+                <label class="col-sm-2 control-label">Option 3</label>
                 <div class="input-group">
                     <span class="input-group-addon">                            
                         <input type="checkbox" name="answers[]">
@@ -76,7 +76,7 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label class="col-sm-2 control-label">Option 1</label>
+                <label class="col-sm-2 control-label">Option 4</label>
                 <div class="input-group">
                     <span class="input-group-addon">                            
                         <input type="checkbox" name="answers[]">

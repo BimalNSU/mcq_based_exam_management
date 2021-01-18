@@ -49,10 +49,10 @@
                     <textarea class="form-control" rows="3" id="q_text" placeholder="write your question" style="resize: none">{{$question['q_text']}}</textarea>
                 </div>                
             </div>
-            @foreach($question['options'] as $option)  
+            @foreach($question['options'] as $key=>$option)  
                  <?php $i=0 ?>         
                 <div class="form-group row">
-                    <label class="col-sm-2 control-label">Option 1</label>
+                    <label class="col-sm-2 control-label">Options. {{$key}}</label>
                     <div class="input-group">
                         <span class="input-group-addon">
                             @foreach($question['answers'] as $answer)
@@ -78,9 +78,7 @@
         <!-- /.box-footer -->	
     </div>
 </div>
-		
 
-<input type="checkbox" class="onoffswitch-checkbox" id="inline" checked=1 >
 @endsection() 
 
 @section('script_area') 
