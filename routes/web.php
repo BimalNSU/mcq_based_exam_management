@@ -27,6 +27,7 @@ Route::POST('teacher/exam/insert','TeacherController@create_exam_to_course')->na
 Route::GET('/teacher/exam/edit_view/{exam_id}','TeacherController@get_exam_data');
 Route::POST('teacher/exam/edit/{exam_id}','TeacherController@update_exam_of_course');
 Route::GET('/teacher/exam/view/{exam_id}','TeacherController@exam_info');
+Route::delete('teacher/exam/delete/{exam_id}','TeacherController@delete_exam_of_course')->name('deleteExam');
 
 Route::GET('teacher/exam/{exam_id}/question/create','TeacherController@create_question_page')->name('createQuestionPage');
 Route::post('teacher/exam/{exam_id}/question/insert/','TeacherController@create_question_to_exam')->name('createQuestion');
