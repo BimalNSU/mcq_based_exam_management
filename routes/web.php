@@ -38,6 +38,6 @@ Route::delete('teacher/exam/question/delete/{q_track_id}','TeacherController@del
 // Route::delete('teacher/exam/delete/{exam_id}','TeacherController@delete_exam_of_course')->name('deleteExam');
 
 Route::get('/student','StudentController@index')->name('student')->middleware('student');
-
-Route::get('/student/exam','StudentController@test_exam')->name('exam')->middleware('student');
+Route::get('/student/exam/view/{exam_id}','StudentController@exam_info')->middleware('student');
+// Route::get('/student/exam/view/{exam_id}','StudentController@test_exam')->name('exam')->middleware('student');
 Route::get('/student/exam/{exam_id}','StudentController@test_exam2')->middleware('student');
