@@ -52,6 +52,7 @@
         </div>
         <!-- /.box-header -->
         <div class="box-body">
+            <span id="respond_result"></span>
         <form action="{{url('teacher/exam/insert')}}" method="POST">
         @csrf
             <div class="form-group row">
@@ -71,7 +72,7 @@
             <div class="form-group row">
                 <label for="inputPassword3" class="col-sm-2 control-label">Attempts allow</label>		
                 <div class="col-sm-2">
-                    <input type="number" name="attempt_limit" oninput="vaildAttempts()|| (value='');" class="form-control" placeholder="Attempts allow">
+                    <input type="number" name="attempt_limit" oninput="validity.valid|| (value='');" class="form-control" placeholder="Attempts allow">
                 </div>
             </div>
             

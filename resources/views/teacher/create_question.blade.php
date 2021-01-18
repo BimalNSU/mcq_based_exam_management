@@ -105,8 +105,8 @@
         // json_object.q_no = last_q_object.attr("id");    //store question's id
         let q_serial_no = $("#q_serial_no").val();
         let q_text = $("#q_text").val();
-        json_object.q_serial_no = q_serial_no;
-        json_object.q_text = q_text;
+        json_object.question_no = q_serial_no;
+        json_object.question_text = q_text;
         
         let options = [];
         let answers = [];
@@ -134,7 +134,7 @@
             if(data.errors)
             {
                 html = '<div class="alert alert-danger">';
-                console.log(data);
+                // console.log(data);
                 for(var count = 0; count < data.errors.length; count++)
                 {
                     html += '<p>' + data.errors[count] + '</p>';
