@@ -40,13 +40,17 @@
         <h4>This quiz closed {{$exam_info['session_end_date']}}, {{$exam_info['session_end_time']}}</h4>
         <h4> Grading method: {{$exam_info['grading_method']}}</h4> 
         <h4> Time limits: {{$exam_info['time_limit']}} minutes</h4> 
-        <a>
-            <button type="button" class="btn btn-primary"> Attempt quiz now</button>
-        </a>
+        <div id='attempt'></div>
     </div>
 @endsection()
 
 
 @section('script_area')
+ <script>
+	let attempt_btn = {!! json_encode($attempt_btn) !!};
+	let exam_id = {!! json_encode($exam_id) !!};
+	$('#attempt').html(attempt_btn);
+	document.getElementById("link").href = '#/student/exam/do/',exam_id;
+ </script>
  
 @endsection()

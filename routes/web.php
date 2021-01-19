@@ -22,22 +22,23 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/admin','AdminController@index')->name('admin')->middleware('admin');
 Route::get('/teacher','TeacherController@index')->name('teacher')->middleware('teacher');
 
-Route::GET('teacher/exam/create','TeacherController@create_exam_page');
-Route::POST('teacher/exam/insert','TeacherController@create_exam_to_course')->name('createExam');
-Route::GET('/teacher/exam/edit_view/{exam_id}','TeacherController@get_exam_data');
-Route::POST('teacher/exam/edit/{exam_id}','TeacherController@update_exam_of_course');
-Route::GET('/teacher/exam/view/{exam_id}','TeacherController@exam_info');
-Route::delete('teacher/exam/delete/{exam_id}','TeacherController@delete_exam_of_course')->name('deleteExam');
+Route::GET('teacher/exam/create','TeacherController@create_exam_page')->middleware('teacher');
+Route::POST('teacher/exam/insert','TeacherController@create_exam_to_course')->name('createExam')->middleware('teacher');
+Route::GET('/teacher/exam/edit_view/{exam_id}','TeacherController@get_exam_data')->middleware('teacher');
+Route::POST('teacher/exam/edit/{exam_id}','TeacherController@update_exam_of_course')->middleware('teacher');
+Route::GET('/teacher/exam/view/{exam_id}','TeacherController@exam_info')->middleware('teacher');
+Route::delete('teacher/exam/delete/{exam_id}','TeacherController@delete_exam_of_course')->name('deleteExam')->middleware('teacher');
 
-Route::GET('teacher/exam/{exam_id}/question/create','TeacherController@create_question_page')->name('createQuestionPage');
-Route::post('teacher/exam/{exam_id}/question/insert/','TeacherController@create_question_to_exam')->name('createQuestion');
-Route::GET('/teacher/exam/{exam_id}/question/edit_view/{q_track_id}','TeacherController@get_exam_questions_details')->name('questionEditView');
-Route::post('teacher/exam/{exam_id}/question/edit/{q_track_id}','TeacherController@update_question_of_exam')->name('updateQuestion');
-Route::delete('teacher/exam/question/delete/{q_track_id}','TeacherController@delete_exam_question')->name('deleteExamQuestion');
-
-// Route::delete('teacher/exam/delete/{exam_id}','TeacherController@delete_exam_of_course')->name('deleteExam');
+Route::GET('teacher/exam/{exam_id}/question/create','TeacherController@create_question_page')->name('createQuestionPage')->middleware('teacher');
+Route::post('teacher/exam/{exam_id}/question/insert/','TeacherController@create_question_to_exam')->name('createQuestion')->middleware('teacher');
+Route::GET('/teacher/exam/{exam_id}/question/edit_view/{q_track_id}','TeacherController@get_exam_questions_details')->name('questionEditView')->middleware('teacher');
+Route::post('teacher/exam/{exam_id}/question/edit/{q_track_id}','TeacherController@update_question_of_exam')->name('updateQuestion')->middleware('teacher');
+Route::delete('teacher/exam/question/delete/{q_track_id}','TeacherController@delete_exam_question')->name('deleteExamQuestion')->middleware('teacher');
 
 Route::get('/student','StudentController@index')->name('student')->middleware('student');
 Route::get('/student/exam/view/{exam_id}','StudentController@exam_info')->middleware('student');
-// Route::get('/student/exam/view/{exam_id}','StudentController@test_exam')->name('exam')->middleware('student');
-Route::get('/student/exam/{exam_id}','StudentController@test_exam2')->middleware('student');
+Route::get('/student/exam/test/{exam_id}','StudentController@join_exam')->middleware('student');
+Route::post('/student/exam/do/{exam_track_id}','StudentController@do_exam')->name('do_exam')->middleware('student');
+
+// Route::get('/student/exam/do/{exam_id}','StudentController@test_exam')->name('exam')->middleware('student');
+// Route::get('/student/exam/{exam_id}','StudentController@test_exam2')->middleware('student');

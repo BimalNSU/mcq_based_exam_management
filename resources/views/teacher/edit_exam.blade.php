@@ -125,10 +125,10 @@
             <div class="form-group row">
                 <label class ="col-sm-2">Grading method</label>
                 <div class="col-sm-3">
-                    <select class="form-control" name="grading_method">
-                        <option selected disabled hidden>{{$data['grading_method']}}</option>
-                        <option>Last attempt</option>
-                        <option>Best attempt</option>
+                    <select class="form-control" name="grading_method" >
+                        <option selected disabled hidden value ="{{$data['grading_method']}}">{{$data['grading_method']}}</option>
+                        <option value="Last attempt">Last attempt</option>
+                        <option value="Best attempt">Best attempt</option>
                     </select>
                 </div>
             </div>

@@ -127,9 +127,9 @@ class TeacherController extends Controller
         $data = json_encode($result);
         $data  = json_decode($data,true);   //store data in array
         $data = $data[0];        
-        $data['session_start_date'] = Carbon::parse( $data["session_start_date"])->format('d/m/Y');
-        $data['session_end_date'] = Carbon::parse( $data["session_end_date"])->format('d/m/Y');
-        
+        $data['session_start_date'] = Carbon::parse( $data["session_start_date"])->format('m/d/Y');
+        $data['session_end_date'] = Carbon::parse( $data["session_end_date"])->format('m/d/Y');
+    
         // 24-hour time to 12-hour time with am,pm
         $data['session_start_time'] = Carbon::parse( $data['session_start_time'])->format('h:i a') ;
         $data['session_end_time'] = Carbon::parse( $data['session_end_time'])->format('h:i a');

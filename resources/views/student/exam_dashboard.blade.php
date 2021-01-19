@@ -45,124 +45,30 @@
     </div>  
     
     <div class="qbody">
+    @foreach($exam_data as $value)
         <!-- checkbox question-1 -->
-        <div class="form-group question" id="1">
-            <h4>1. What is the Capital of Bangladsh?</h4>
+        <div class="form-group question" id="{{$value['q_track_id']}}">
+            <h4>{{$value['q_serial_no']}}. {{$value['q_text']}}</h4>
+            <?php $i = 0; ?>
+            @foreach($value['options'] as $option)
             <div class="checkbox">
-                <input type="checkbox" value="a">
-                <label><span> a. </span>Dhaka</label>                    
+                <input type="checkbox" value="{{$value['q_option_numbers'][$i]}}">
+                <label><span> {{$value['q_option_numbers'][$i]}}. </span>{{$option}}</label>                    
             </div>
-            <div class="checkbox">
-                <input type="checkbox" value="b">
-                <label><span> b. </span>Chittagonj</label>                           
-            </div>
-            <div class="checkbox">
-                    <input type="checkbox" value="c" >
-                    <label><span> c. </span>Khulna</label>                    
-                </div>
-
-                <div class="checkbox">
-                    <input type="checkbox" value="d">
-                    <label><span> d. </span>Rajsahi</label>                           
-                </div>
-            
-        </div><br/><br/>
-
-        <!-- checkbox question-2 -->
-        <div class="form-group question" id="2">
-            <h4>2. Who was the prime minister of Bangladsh?</h4>
-            <div class="checkbox">
-                <input type="checkbox" value="a">
-                <label><span> a. </span>Sheikh Hasina</label>                           
-            </div>
-            <div class="checkbox">
-                <input type="checkbox" value="b">
-                <label><span> b. </span>Begum Zia</label>                           
-            </div>
-            <div class="checkbox">
-                <input type="checkbox" value="c">
-                <label><span> c. </span>Barack Obama</label>                           
-            </div>
-            <div class="checkbox">
-                <input type="checkbox" value="d">
-                <label><span> d. </span>Donald Trump</label>                           
-            </div>
-        </div><br/><br/>
-        
-        <!-- checkbox question-3 -->
-        <div class="form-group question" id="3">
-            <h4>3. Who is he national poet of Bangladsh?</h4>
-            <div class="checkbox">
-                <input type="checkbox" value="a">
-                <label><span> a. </span>Kazi Nazrul Islam</label>                           
-            </div>
-            <div class="checkbox">
-                <input type="checkbox" value="b">
-                <label><span> b. </span>Rabindranath Tagor</label>                           
-            </div>
-            <div class="checkbox">
-                <input type="checkbox" value="c">
-                <label><span> c. </span>Jibanando Das</label>                           
-            </div>
-            <div class="checkbox">
-                <input type="checkbox" value="d">
-                <label><span> d. </span>Micheal Modhusudon Dutta</label>                           
-            </div>	
-        </div><br/><br/>			
-        
-        <!-- checkbox question-4 -->
-        <div class="form-group question" id="4">
-            <h4>4. What is the national fruit of Bangladsh?</h4>
-            <div class="checkbox">
-                <input type="checkbox" value="a">
-                <label><span> a. </span>Mango</label>                           
-            </div>
-            <div class="checkbox">
-                <input type="checkbox" value="b">
-                <label><span> d. </span>Jackfruit</label>                           
-            </div>
-            <div class="checkbox">
-                <input type="checkbox" value="c">
-                <label><span> d. </span>Apple</label>                           
-            </div>
-            <div class="checkbox">
-                <input type="checkbox" value="d">
-                <label><span> d. </span>Orange</label>                           
-            </div>                
-        </div><br/><br/>
-                    
-        <!-- checkbox question-5 -->
-        <div class="form-group question" id="5">
-            <h4>5. What is the national animal of Bangladsh?</h4>
-            <div class="checkbox">
-                <input type="checkbox" value="a">
-                <label><span> a. </span>Cow</label>                           
-            </div>
-            <div class="checkbox">
-                <input type="checkbox" value="b">
-                <label><span> b. </span>Tiger</label>                           
-            </div>
-            <div class="checkbox">
-                <input type="checkbox" value="c">
-                <label><span> c. </span>Lion</label>                           
-            </div>
-            <div class="checkbox">
-                <input type="checkbox" value="d">
-                <label><span> d. </span>Fox</label>                           
-            </div>                
-        </div><br/><br/><br/><br/><br/><br/>
-            
+                <?php $i = $i +1; ?>
+            @endforeach                        
+        </div><br/>
+    @endforeach
+                             
+                  
+    </div><br/><br/><br/><br/><br/><br/>
+       <div>     
         <button class="submit" name="submit" align="right" id="save_btn"> Save & Close </button>		
     </div>
     
 @endsection()
 
 @section('script_area')
-
-    <!-- jQuery 3 -->
-    <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <!-- Bootstrap 3.3.7 -->
-    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script>
          $(document).ready(function(){
              var last_q_object = null;
@@ -188,7 +94,7 @@
 
             function getLastChoices()
             {
-                alert("last question no: "+ last_q_object.attr("id"));
+                // alert("last question no: "+ last_q_object.attr("id"));
                 let json_object = Object();
                 json_object.q_no = last_q_object.attr("id");    //store question's id
                 let json_array = [];
@@ -196,7 +102,16 @@
                     json_array[index]= $(this).attr("value");   //stores all choices
                 });
                 json_object.option_no = json_array;
-                console.log(json_object);                    
+                // console.log(json_object); 
+                let exam_track_id = {!! json_encode($exam_track_id) !!};
+                $.post("{{ route('do_exam', [':exam_track_id']) }}".replace(':exam_track_id', exam_track_id), {data: JSON.stringify(json_object) } , function(data){
+                        // Display the returned data in console
+                        //console.log(data);                    
+                    if(data.success)
+                    {
+                        console.log(data); 
+                    }                    
+                });                           
             }                
         });      
     </script>
