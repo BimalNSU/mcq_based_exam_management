@@ -18,20 +18,6 @@ class StudentController extends Controller
                 FROM exams ;";
         $data = DB::select( DB::raw($query));
         $exams  = json_decode(json_encode($data),true);   //store data in array
-
-        // $exams = array(
-        //                 array(
-        //                 'id'  =>1,
-        //                 'name'  =>'exam 1',
-        //                 'description'=>'Syllabus: chapter 1,2' 
-        //                 ),
-        //                 array(
-        //                     'id'  =>2,
-        //                     'name' => 'exam 2',
-        //                     'description'=>'Syllabus: chapter 1,2' 
-        //                     )
-        //             );
-        // echo $exams;
         return view('student.index',['exams' => $exams]);  
     }
 
@@ -79,10 +65,7 @@ class StudentController extends Controller
     }
     
     public function join_request_exam(Request $request)
-    {   //$start  = new Carbon('2018-10-05 16:00');
-        // $end    = new Carbon('2018-10-05 17:00:09');
-        // return $start->diff($end)->format('%H:%I:%S');
-        // return $start->diffInMinutes($end);
+    {   
         $exam_id = (int)$request->exam_id;
         $student_id = auth()->user()->id;        
         $sql ="select session_start, session_end, time_limit, attempt_limit, exam_track_id, attempt_no,student_start,student_end                    
@@ -313,38 +296,4 @@ class StudentController extends Controller
 
     }
 
-    public function test_exam()
-    {
-        $sql =' select x.*,  GROUP_CONCAT(answers) AS answers
-                from	(SELECT q_track_id,
-                                GROUP_CONCAT(q_options) AS choices	 
-                        FROM exam_papers_q_options
-                        WHERE exam_track_id =1
-                        GROUP BY q_track_id
-                        order by q_option_no) as x natural join exam_questions_answers        
-                group by x.q_track_id ;';
-        
-        $data = DB::select(DB::raw($sql));
-        $i = 0;
-        foreach($data as $value)
-        {
-            $data[$i]->choices = explode(",", $value->choices); //spliting all choices as array and store in that object
-            $i++;           
-        }                
-        $data = json_encode($data);
-        $data  = json_decode($data,true);
-         return view('student.test_exam',['data' => $data]);  
-        // $user_id = auth()->user()->id;
-        // dd($data);      
-        $exam_track_id = 2;  
-        // echo url("/student/exam/do/{$exam_id->$exam_id}");
-
-        // return redirect( url("/student/exam/$exam_track_id")  );     
-    //    $results = DB::select( DB::raw("SELECT * FROM some_table WHERE some_col = '$someVariable'") );
-    }
-    public function test_exam2(Request $request)
-    {
-        $exam_id = (int)$request->exam_id;
-        dd($exam_id);
-    }
 }
