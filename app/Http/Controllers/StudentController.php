@@ -33,9 +33,7 @@ class StudentController extends Controller
         $exam_info = DB::select(DB::raw($sqlQuery));
         $exam_info = json_decode(json_encode($exam_info),true);
         $exam_info = $exam_info[0];
-
        
-
         $exam_info['session_start_date'] = Carbon::parse( $exam_info["session_start_date"])->format('d F y');
         $exam_info['session_end_date'] = Carbon::parse( $exam_info["session_end_date"])->format('d F y');
         
@@ -49,14 +47,27 @@ class StudentController extends Controller
         $session_start = Carbon::parse( $session_start)->format('Y-m-d H:i'); 
         $session_end = Carbon::parse( $session_end)->format('Y-m-d H:i'); 
         //  $current_datetime = Carbon::parse( Carbon::now('Asia/Dhaka'))->format('d F y h:i a'); 
+        $sql2 = "SELECT count(q_track_id) as total_questions
+                    FROM exam_questions
+                    WHERE exam_id = $exam_id";
+        $numberOfQuestions = DB::select(DB::raw($sql2));
+        $numberOfQuestions = json_decode(json_encode($numberOfQuestions),true);
+        $numberOfQuestions = $numberOfQuestions[0]['total_questions'];
+
          $attempt_btn = '';
         //  dd($current_datetime, $session_start);
         if ($current_datetime >= $session_start and $current_datetime < $session_end )
         {
-            // return 'true';
-            $attempt_btn = "<a id ='link'>
+            if($numberOfQuestions == 0)
+            {
+                $attempt_btn = "<span>No questions are added</span>";
+            }
+            else
+            {
+                $attempt_btn = "<a id ='link'>
                                     <button type='button' class='btn btn-primary'> Attempt quiz now</button>
                                 </a>";
+            }
         } 
         // dd($exam_id);
         // return array_push($exam_info['attempt_btn'], attempt_btn' => $attempt_now_btn);     
