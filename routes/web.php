@@ -37,8 +37,8 @@ Route::delete('teacher/exam/question/delete/{q_track_id}','TeacherController@del
 
 Route::get('/student','StudentController@index')->name('student')->middleware('student');
 Route::get('/student/exam/view/{exam_id}','StudentController@exam_info')->middleware('student');
-Route::get('/student/exam/test/{exam_id}','StudentController@join_exam')->middleware('student');
-Route::post('/student/exam/do/{exam_track_id}','StudentController@do_exam')->name('do_exam')->middleware('student');
+Route::get('/student/exam/request/{exam_id}','StudentController@join_request_exam')->middleware('student');
+Route::get('/student/exam/join/{exam_track_id}','StudentController@join_exam_page')->name('join_exam')->middleware('student');
 
-// Route::get('/student/exam/do/{exam_id}','StudentController@test_exam')->name('exam')->middleware('student');
+Route::post('/student/exam/do/{exam_track_id}','StudentController@do_exam')->name('do_exam')->middleware('student');
 // Route::get('/student/exam/{exam_id}','StudentController@test_exam2')->middleware('student');
