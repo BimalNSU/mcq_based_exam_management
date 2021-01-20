@@ -92,16 +92,37 @@ class StudentController extends Controller
                 limit 1;";
         $data = DB::select(DB::raw($sql));
         $data  = json_decode(json_encode($data),true);
+        // dd(!empty($data));
+        $no_data_found = empty($data);
+        if($no_data_found == true)
+        {
+            $sql ="select session_start, session_end, time_limit, attempt_limit
+                    from exams
+                    where exam_id = $exam_id";
+            $data = DB::select(DB::raw($sql));
+            $data  = json_decode(json_encode($data),true);  
+        }                              
+        
         $session_start = $data[0]['session_start'];
         $session_end = $data[0]['session_end'];
         $time_limit = $data[0]['time_limit'];
         $attempt_limit =$data[0]['attempt_limit'];
-        $exam_track_id = $data[0]['exam_track_id'];
-        $attempt_no = $data[0]['attempt_no'];
+
+        $exam_track_id = null;
+        $attempt_no = 0;
         $next_attempt = $attempt_no + 1;
-        $student_start =$data[0]['student_start'];
-        $student_end = $data[0]['student_end'];
-        
+        $student_start = 0;
+        $student_end;  
+
+        if($no_data_found = false)
+        {
+            $exam_track_id = $data[0]['exam_track_id'];
+            $attempt_no = $data[0]['attempt_no'];
+            $next_attempt = $attempt_no + 1;
+            $student_start =$data[0]['student_start'];
+            $student_end = $data[0]['student_end'];
+        }
+
         $current_datetime = Carbon::parse( Carbon::now('Asia/Dhaka'))->format('Y-m-d H:i'); 
     
         $t1;
@@ -248,18 +269,47 @@ class StudentController extends Controller
     {
         $exam_track_id = (int)$request->exam_track_id;
         // getting json data
-        $data = $request->all();
-        return response()->json(['success' =>$data]);
-        // dd($data);
-        // $q_track_id = $data['q_no'];
-        // $q_option_no = $data['option_no'];
-        // $sql = "UPDATE exam_paper_q_options
-        //         SET is_selected = 0
-        //         WHERE exam_track_id = $exam_track_id and q_track_id = $q_track_id ;";
-        // // DB::update(DB::raw($sql));
-        // $sql2 = "UPDATE exam_paper_q_options 
-        //         SET is_selected = 1
-        //         WHERE exam_track_id = $exam_track_id and q_track_id = $q_track_id and q_option_no = $q_option_no";
+        $data = $request->all();                      
+        $data = json_decode($data['data'],true);
+        // return $data; 
+        $q_track_id = $data['q_track_id'];
+        $q_option_no = $data['option_no'];
+        
+        $i = 0;
+        $length = count($q_option_no);        
+        while($i < $length)
+        {
+            $q_option_no[$i] = (int)$q_option_no[$i];
+            $i = $i+1;            
+        }
+        $sql = "UPDATE exam_papers_q_options
+                SET is_selected = 0
+                WHERE exam_track_id = $exam_track_id and q_track_id = $q_track_id ;";
+        
+        
+        try{
+            DB::beginTransaction();
+            DB::update(DB::raw($sql));
+            foreach($q_option_no as $value)
+            {
+                $sql2 = "UPDATE exam_papers_q_options 
+                            SET is_selected = 1
+                        WHERE exam_track_id = $exam_track_id and q_track_id = $q_track_id and q_option_no = $value;";
+                DB::update(DB::raw($sql2));                        
+            }                        
+            DB::commit();
+            return response()->json(['success' => "Question's answer is stored successfully."]);
+        }
+        catch(Exception $e)
+        {
+            DB::rollback();
+            $errorCode = $e->errorInfo[1];
+            if($errorCode == 1062)
+            {
+                return "duplicate data insertion error";
+            }                         
+            return $e;
+        }                
 
     }
 
