@@ -41,7 +41,7 @@
     <div class="qpaper">
         <h1> Question Paper 1 </h1>
         <h3> Total marks: 5 </h3>
-        <h3 align="right">Time left: 10:00 minutes</h3>
+        <h3 align="right">Time left: {{$remaining_time}} minutes</h3>
     </div>  
     
     <div class="qbody">
@@ -52,7 +52,11 @@
             <?php $i = 0; ?>
             @foreach($value['options'] as $option)
             <div class="checkbox">
-                <input type="checkbox" value="{{$value['q_option_numbers'][$i]}}">
+                @if($value['is_selected'][$i] == 1)
+                <input type="checkbox" value="{{$value['q_option_numbers'][$i]}}" checked>{{$value['is_selected'][$i]}}
+                @else
+                <input type="checkbox" value="{{$value['q_option_numbers'][$i]}}" >
+                @endif                
                 <label><span> {{$value['q_option_numbers'][$i]}}. </span>{{$option}}</label>                    
             </div>
                 <?php $i = $i +1; ?>
@@ -63,7 +67,9 @@
                   
     </div><br/><br/><br/><br/><br/><br/>
        <div>     
-        <button class="submit" name="submit" align="right" id="save_btn"> Save & Close </button>		
+        <a>
+            <button class="submit" name="submit" align="right" id="save_btn"> Save & Close </button>
+        </a>
     </div>
     
 @endsection()
@@ -72,6 +78,7 @@
     <script>
          $(document).ready(function(){
              var last_q_object = null;
+             var stop_exam = 0;
             $(".question div input:checkbox").click(function()
             {
                 // alert($(this).parents());
@@ -88,6 +95,7 @@
                 }
             });
             $("#save_btn").click(function(){
+                stop_exam = 1;
                 getLastChoices();
                 last_q_object = null;
             });
@@ -96,13 +104,14 @@
             {
                 // alert("last question no: "+ last_q_object.attr("id"));
                 let json_object = Object();
+                json_object.stop_exam = stop_exam;
                 json_object.q_track_id = last_q_object.attr("id");    //store question's id
                 let json_array = [];
                 $.each($(last_q_object).find("div").children("input:checked"),function(index){
                     json_array[index]= $(this).attr("value");   //stores all choices
                 });
                 json_object.option_no = json_array;
-                // console.log(json_object); 
+                console.log(json_object); 
                 
                 let exam_track_id = {!! json_encode($exam_track_id) !!};
                 $.post("{{ route('do_exam', [':exam_track_id']) }}".replace(':exam_track_id', exam_track_id), {data: JSON.stringify(json_object) } , function(data){
