@@ -118,7 +118,7 @@
             <div class="form-group row">
                 <label for="inputPassword3" class="col-sm-2 control-label">Time limit</label>
                 <div class="col-sm-3">
-                    <input class="form-control js-input-absint" type="number" name="time_limit" step="1" min="10"  max="150" value="{{$data['time_limit'] }}" placeholder="enter time limit in minutes">
+                    <input class="form-control js-input-absint" type="number" name="time_limit" step="1" min="1"  max="150" value="{{$data['time_limit'] }}" placeholder="enter time limit in minutes">
                 </div>
             </div>				
 

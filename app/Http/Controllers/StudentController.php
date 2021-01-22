@@ -79,161 +79,169 @@ class StudentController extends Controller
     {   
         $exam_id = (int)$request->exam_id;
         $student_id = auth()->user()->id;        
-        $sql ="select session_start, session_end, time_limit, attempt_limit, exam_track_id, attempt_no,student_start,student_end                    
+        $sql1 ="select session_start, session_end, time_limit, attempt_limit, exam_track_id, attempt_no,student_start,student_end                    
                 from exam_assign natural join exams
                 where exam_id = $exam_id and student_id = $student_id
                 order by attempt_no desc
                 limit 1;";
-        $data = DB::select(DB::raw($sql));
-        $data  = json_decode(json_encode($data),true);
-        // dd(!empty($data));
-        $no_data_found = empty($data);
-        if($no_data_found == true)
+        $data1 = DB::select(DB::raw($sql1));        
+        $data1  = json_decode(json_encode($data1),true);        
+        // dd($data1);
+        $data_found = !empty($data1);        
+        $session_start;
+        $session_end;
+        $time_limit = 0;
+        $attempt_limit = 0;
+        $exam_track_id = null;
+        $attempt_no = 0;        
+        $student_start;
+        $student_end = null;
+        $data2;
+        if($data_found == true)
+        {        
+            $session_start = $data1[0]['session_start'];
+            $session_end = $data1[0]['session_end'];
+            $time_limit = $data1[0]['time_limit'];
+            $attempt_limit =$data1[0]['attempt_limit'];
+            $exam_track_id = $data1[0]['exam_track_id'];
+            $attempt_no = $data1[0]['attempt_no'];
+            // $next_attempt = $attempt_no + 1;
+            $student_start =$data1[0]['student_start'];
+            $student_end = $data1[0]['student_end'];
+        }
+        else
         {
-            $sql ="select session_start, session_end, time_limit, attempt_limit
+            $sql2 ="select session_start, session_end, time_limit, attempt_limit
                     from exams
                     where exam_id = $exam_id";
-            $data = DB::select(DB::raw($sql));
-            $data  = json_decode(json_encode($data),true);  
+            $data2 = DB::select(DB::raw($sql2));
+            $data2  = json_decode(json_encode($data2),true);
+
+            $session_start = $data2[0]['session_start'];
+            $session_end = $data2[0]['session_end'];
+            $time_limit = $data2[0]['time_limit'];
+            $attempt_limit =$data2[0]['attempt_limit'];
         }                              
-        
-        $session_start = $data[0]['session_start'];
-        $session_end = $data[0]['session_end'];
-        $time_limit = $data[0]['time_limit'];
-        $attempt_limit =$data[0]['attempt_limit'];
-
-        $exam_track_id = null;
-        $attempt_no = 0;
         $next_attempt = $attempt_no + 1;
-        $student_start = 0;
-        $student_end = 0;  
-
-        if($no_data_found = false)
-        {
-            $exam_track_id = $data[0]['exam_track_id'];
-            $attempt_no = $data[0]['attempt_no'];
-            $next_attempt = $attempt_no + 1;
-            $student_start =$data[0]['student_start'];
-            $student_end = $data[0]['student_end'];
-        }
-
         $current_datetime = Carbon::parse( Carbon::now('Asia/Dhaka'))->format('Y-m-d H:i'); 
     
         $t1;
         $t2;
         $remaining_time =0;
-        // dd($session_end);
-        if( $current_datetime < $session_end and $attempt_limit > $attempt_no)
-        {
-            $start = new Carbon($current_datetime);
-            $end = new Carbon($session_end);
-            
-            //$t1 = $session_end - $current_datetime;
-            $t1 = $start->diffInMinutes($end);
-            $t2 = $time_limit;
-            if($t1 <= $t2)
+        if( $current_datetime < $session_end )
+        {   
+            if($data_found == true)
             {
-                $remaining_time = $t1;
-            }
-            else
-            {
-                $remaining_time = $t2;
-            }
-        }
-        
-        if($remaining_time > 0 )
-        {
-            if($student_end == null)
-            {                
-                DB::beginTransaction();
-                try{
-                    $sql2 ="INSERT INTO exam_assign (exam_id,attempt_no,student_id,student_start)
-                            values($exam_id, $next_attempt,$student_id, '$current_datetime');";
-                    $data2 = DB::select(DB::raw($sql2));                    
-                    $exam_track_id = DB::getPdo()->lastInsertId();   
-                    
-                    // $myAry =[0,1,2,3,4,5];
-                    // shuffle($myAry);
-                    // dd($myAry);
-                    $sql3 = "select q_track_id
-                            from exam_questions
-                            where exam_id = $exam_id
-                            order by rand();";
-                    $data3 = DB::select(DB::raw($sql3));
-                    $data3  = json_decode(json_encode($data3),true);                    
+                $start = new Carbon($current_datetime);
+                // $end = new Carbon($session_end);
+                $end = new Carbon($student_start);
 
-                    $q_track_id = $data3[0]['q_track_id'];
-                    $sql4 = "INSERT INTO exam_papers (exam_track_id, q_track_id, q_serial_no)
-                                values($exam_track_id,$q_track_id,1 )";
-                    $i=1;
-                    $length = count($data3);
-                    while($i < $length)
-                    {
-                        $q_track_id = $data3[$i]['q_track_id'];
-                        $sql4 = $sql4 . ",($exam_track_id, $q_track_id, $i+1 )";                         
-                        $i = $i+1;
-                    }
-                    DB::insert(DB::raw($sql4));    
-                    $sql5 =" select e.q_track_id,GROUP_CONCAT(q_options) as options
-                            from exam_questions e natural join exam_questions_options
-                            where exam_id = $exam_id
-                            GROUP BY e.q_track_id
-                            order by e.q_track_id";
-
-                    $data5 = DB::select(DB::raw($sql5));
-                    $length = count($data5);
-                    $i = 0;
-                    while ($i < $length)    
-                    {
-                        $array_options = explode(",",$data5[$i]->options); //spliting all options as array and store in that object
-                        shuffle($array_options);    //all options are being shuffled
-                        $data5[$i]->options = $array_options;
-                        $i = $i+1;
-                    }
-                    $data5  = json_decode(json_encode($data5),true);
-                    // dd($data5[0]['q_track_id']);
-                    $option = $data5[0]['options'][0];
-                    $q_track_id = $data5[0]['q_track_id'];
-                    $sql6 = "INSERT INTO exam_papers_q_options (exam_track_id,q_track_id,q_option_no,q_options,is_selected)
-                            values($exam_track_id, $q_track_id, 1 ,'$option', 0)";
-                    $i=0;
-                    while($i < $length)
-                    {
-                        $j = 0;
-                        if($i == 0 and $j == 0)
-                        {
-                            $j = 1;
-                        }
-                        $options_numbers = $length = count($data5[$i]['options']);
-                        while($j < $options_numbers)
-                        {
-                            $opiton = $data5[$i]['options'][$j];
-                            $q_track_id = $data5[$i]['q_track_id'];
-                            $q_option_no = $j +1;
-                            $sql6 = $sql6 . ",($exam_track_id, $q_track_id, $q_option_no , '$opiton', 0)";
-                            $j = $j +1;
-                        }
-                        $i =$i +1;                
-                    }            
-                    DB::insert(DB::raw($sql6));
-
-                    DB::commit();
-                    // return view('student.exam_dashboard',['exam_data' => $exam_data,'exam_track_id' => $exam_track_id]);  
-                    // return redirect()->route('join_exam', $exam_track_id)->with( ['exam_data' => $exam_data] );
-                    return redirect()->route('join_exam', $exam_track_id)->with(['remaining_time' => $remaining_time]);
-                }
-                catch(Exception $e)
+                //$escape time = |$current_datetime - student_start|;
+                $escape_time = $start->diffInMinutes($end);
+                //$remaining_time = $time_limit - $escape_time
+                $remaining_time = $time_limit - $escape_time;
+                if($remaining_time < 0)
                 {
-                    DB::rollback();
-                    $errorCode = $e->errorInfo[1];                
-                    return $e;
+                    $remaining_time = 0;
+                } 
+            }               
+            
+            if($attempt_limit > $attempt_no)
+            {
+                if($remaining_time == 0 or ($remaining_time > 0 and $student_end != null))
+                {                
+                    DB::beginTransaction();
+                    try{
+                        $sql2 ="INSERT INTO exam_assign (exam_id,attempt_no,student_id,student_start)
+                                values($exam_id, $next_attempt,$student_id, '$current_datetime');";
+                        $data2 = DB::select(DB::raw($sql2));                    
+                        $exam_track_id = DB::getPdo()->lastInsertId();   
+                        
+                        // $myAry =[0,1,2,3,4,5];
+                        // shuffle($myAry);
+                        // dd($myAry);
+                        $sql3 = "select q_track_id
+                                from exam_questions
+                                where exam_id = $exam_id
+                                order by rand();";
+                        $data3 = DB::select(DB::raw($sql3));
+                        $data3  = json_decode(json_encode($data3),true);                    
+
+                        $q_track_id = $data3[0]['q_track_id'];
+                        $sql4 = "INSERT INTO exam_papers (exam_track_id, q_track_id, q_serial_no)
+                                    values($exam_track_id,$q_track_id,1 )";
+                        $i=1;
+                        $length = count($data3);
+                        while($i < $length)
+                        {
+                            $q_track_id = $data3[$i]['q_track_id'];
+                            $sql4 = $sql4 . ",($exam_track_id, $q_track_id, $i+1 )";                         
+                            $i = $i+1;
+                        }
+                        DB::insert(DB::raw($sql4));    
+                        $sql5 =" select e.q_track_id,GROUP_CONCAT(q_options) as options
+                                from exam_questions e natural join exam_questions_options
+                                where exam_id = $exam_id
+                                GROUP BY e.q_track_id
+                                order by e.q_track_id";
+
+                        $data5 = DB::select(DB::raw($sql5));
+                        $length = count($data5);
+                        $i = 0;
+                        while ($i < $length)    
+                        {
+                            $array_options = explode(",",$data5[$i]->options); //spliting all options as array and store in that object
+                            shuffle($array_options);    //all options are being shuffled
+                            $data5[$i]->options = $array_options;
+                            $i = $i+1;
+                        }
+                        $data5  = json_decode(json_encode($data5),true);
+                        // dd($data5[0]['q_track_id']);
+                        $option = $data5[0]['options'][0];
+                        $q_track_id = $data5[0]['q_track_id'];
+                        $sql6 = "INSERT INTO exam_papers_q_options (exam_track_id,q_track_id,q_option_no,q_options,is_selected)
+                                values($exam_track_id, $q_track_id, 1 ,'$option', 0)";
+                        $i=0;
+                        while($i < $length)
+                        {
+                            $j = 0;
+                            if($i == 0 and $j == 0)
+                            {
+                                $j = 1;
+                            }
+                            $options_numbers = $length = count($data5[$i]['options']);
+                            while($j < $options_numbers)
+                            {
+                                $opiton = $data5[$i]['options'][$j];
+                                $q_track_id = $data5[$i]['q_track_id'];
+                                $q_option_no = $j +1;
+                                $sql6 = $sql6 . ",($exam_track_id, $q_track_id, $q_option_no , '$opiton', 0)";
+                                $j = $j +1;
+                            }
+                            $i =$i +1;                
+                        }            
+                        DB::insert(DB::raw($sql6));
+
+                        DB::commit();
+                        // return view('student.exam_dashboard',['exam_data' => $exam_data,'exam_track_id' => $exam_track_id]);  
+                        // return redirect()->route('join_exam', $exam_track_id)->with( ['exam_data' => $exam_data] );
+                        // return redirect()->route('join_exam', $exam_track_id)->with(['remaining_time' => $remaining_time]);
+                        return redirect()->route('join_exam', $exam_track_id);
+                    }
+                    catch(Exception $e)
+                    {
+                        DB::rollback();
+                        $errorCode = $e->errorInfo[1];                
+                        return $e;
+                    }
                 }
             }
-            else
-            {
-                return redirect()->route('join_exam', $exam_track_id)->with(['remaining_time' => $remaining_time]);
+            if($remaining_time > 0 and $student_end == null)
+            {    //if studnet has no going exam return that exam
+                return redirect()->route('join_exam', $exam_track_id);
             }
-        }
+            
+        }            
         return 'you are not allowed to do exam';
     }
     public function join_exam_page(Request $request)
