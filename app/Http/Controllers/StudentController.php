@@ -262,10 +262,11 @@ class StudentController extends Controller
             $time_limit =(int) $data[0]['time_limit'];
             $student_start =$data[0]['student_start'];
             $student_end =$data[0]['student_end'];                         
-            $current_datetime = Carbon::parse( Carbon::now('Asia/Dhaka'))->format('Y-m-d H:i');         
+            $current_datetime = Carbon::parse( Carbon::now('Asia/Dhaka'))->format('Y-m-d H:i:s');         
             $t1;
             $t2;
-            $remaining_time =0;
+            // dd($current_datetime);
+            $remaining_time_in_seconds =0;
             // dd($session_end);
             if( $current_datetime < $session_end)
             {
@@ -274,10 +275,11 @@ class StudentController extends Controller
                 $end = new Carbon($student_start);
                 
                 //$escape time = $current_datetime - student_start;
-                $escape_time = $start->diffInMinutes($end);
+                $escape_time_in_second = $start->diffInSeconds($end);
                 //$remaining_time = $time_limit - $escape_time
-                $remaining_time = $time_limit - $escape_time;                   
-                if($remaining_time > 0)
+                $remaining_time_in_seconds = ($time_limit * 60) - $escape_time_in_second ;    
+
+                if($remaining_time_in_seconds > 0)
                 {
                     $sql2 ="select m.*    
                         from (select t.q_track_id,x.q_serial_no, y.q_text, t.q_option_numbers, t.options, t.is_selected
@@ -318,7 +320,7 @@ class StudentController extends Controller
                         $i = $i+1;
                     }
                     // dd($exam_data);
-                    return view('student.exam_dashboard',[ 'exam_data' => $exam_data, 'exam_track_id' => $exam_track_id, 'remaining_time' => $remaining_time]);  
+                    return view('student.exam_dashboard',[ 'exam_data' => $exam_data, 'exam_track_id' => $exam_track_id, 'remaining_time_in_seconds' => $remaining_time_in_seconds]);  
                 }
                 
             }
