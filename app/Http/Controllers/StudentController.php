@@ -376,15 +376,13 @@ class StudentController extends Controller
         }
         if($stop_exam == 1)
         {
-            $current_datetime = Carbon::parse( Carbon::now('Asia/Dhaka'))->format('Y-m-d H:i');
+            $current_datetime = Carbon::parse( Carbon::now('Asia/Dhaka'))->format('Y-m-d H:i:s');
             $sql_query ="update exam_assign
-                set student_end = $current_datetime                                    
+                set student_end = '$current_datetime'
                 where exam_track_id = $exam_track_id;";
             DB::update(DB::raw($sql_query));
-            // return redirect()->route('student');
-            return view('student.index');
+            // // return redirect()->route('student');
+            // return view('student.index');
         }                
-
     }
-
 }
