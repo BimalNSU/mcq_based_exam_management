@@ -41,7 +41,7 @@
     <div class="qpaper">
         <h1> Question Paper 1 </h1>
         <h3> Total marks: 5 </h3>        
-        <h3 align="right">Time left:<span id="time">00:00</span>  minutes</h3>
+        <h3 align="right">Time left: <span id="time">00:00</span>  minutes</h3>
     </div>  
     
     <div class="qbody">
@@ -67,7 +67,7 @@
                   
     </div><br/><br/><br/><br/><br/><br/>
        <div>     
-        <a>
+        <a id="savelink">
             <button class="submit" name="submit" align="right" id="save_btn"> Save & Close </button>
         </a>
     </div>
@@ -123,6 +123,8 @@
             stop_exam = 1;
             getLastChoices();
             last_q_object = null;
+            document.getElementById("savelink").href = "{{ route('student')}}";
+
         });
 
         function getLastChoices()

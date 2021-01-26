@@ -51,7 +51,8 @@
 	let exam_id = {!! json_encode($exam_id) !!};
 	// console.log(attempt_btn);
 	$('#attempt').html(attempt_btn);
-	document.getElementById("link").href = '/mcq_based_exam/public/student/exam/request/'+exam_id;
+	// document.getElementById("link").href = '/mcq_based_exam/public/student/exam/request/'+exam_id;
+	document.getElementById("link").href = "{{ route('requestExam', [':exam_id']) }}".replace(':exam_id', exam_id);
  </script>
  
 @endsection()

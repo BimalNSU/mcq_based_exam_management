@@ -268,7 +268,7 @@ class StudentController extends Controller
             // dd($current_datetime);
             $remaining_time_in_seconds =0;
             // dd($session_end);
-            if( $current_datetime < $session_end)
+            if($student_end == null and $current_datetime < $session_end)
             {
                 $start = new Carbon($current_datetime);
                 // $end = new Carbon($session_end);
