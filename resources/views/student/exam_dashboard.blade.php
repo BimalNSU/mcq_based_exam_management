@@ -120,11 +120,10 @@
             }
         });
         $("#save_btn").click(function(){
-            stop_exam = 1;
+            stop_exam = 1;            
             getLastChoices();
             last_q_object = null;
             document.getElementById("savelink").href = "{{ route('student')}}";
-
         });
 
         function getLastChoices()
@@ -132,21 +131,26 @@
             // alert("last question no: "+ last_q_object.attr("id"));
             let json_object = Object();
             json_object.stop_exam = stop_exam;
-            json_object.q_track_id = last_q_object.attr("id");    //store question's id
-            let json_array = [];
-            $.each($(last_q_object).find("div").children("input:checked"),function(index){
-                json_array[index]= $(this).attr("value");   //stores all choices
-            });
-            json_object.option_no = json_array;
-            console.log(json_object); 
-            
+            if(last_q_object != null)
+            {
+                json_object.q_track_id = last_q_object.attr("id");    //store question's id
+                let json_array = [];
+                $.each($(last_q_object).find("div").children("input:checked"),function(index){
+                    json_array[index]= $(this).attr("value");   //stores all choices
+                });
+                json_object.option_no = json_array;
+            }
+            else
+            {
+                json_object.q_track_id = null; //special value for checking no question has been sent             
+            }            
             let exam_track_id = {!! json_encode($exam_track_id) !!};
             $.post("{{ route('do_exam', [':exam_track_id']) }}".replace(':exam_track_id', exam_track_id), {data: JSON.stringify(json_object) } , function(data){
                     // Display the returned data in console
                     // console.log(data);                    
                 if(data.success)
                 {
-                    console.log(data); 
+                    // console.log(data); 
                 }                    
             });                           
         }                

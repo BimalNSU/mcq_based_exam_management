@@ -145,7 +145,12 @@ class StudentController extends Controller
                     $remaining_time = 0;
                 } 
             }               
-            
+            //if student has exam time remain and he doesn't stop the exam by himself
+            if($remaining_time > 0 and $student_end == null)
+            {    //if studnet has on going exam return that exam
+                return redirect()->route('join_exam', $exam_track_id);
+            }
+            //create new exam paper if the condition is true
             if($attempt_limit > $attempt_no)
             {
                 if($remaining_time == 0 or ($remaining_time > 0 and $student_end != null))
@@ -235,12 +240,7 @@ class StudentController extends Controller
                         return $e;
                     }
                 }
-            }
-            if($remaining_time > 0 and $student_end == null)
-            {    //if studnet has no going exam return that exam
-                return redirect()->route('join_exam', $exam_track_id);
-            }
-            
+            }            
         }            
         return 'you are not allowed to do exam';
     }
@@ -334,46 +334,48 @@ class StudentController extends Controller
         // getting json data
         $data = $request->all();                      
         $data = json_decode($data['data'],true);
-        // return $data; 
-        $stop_exam = $data['stop_exam'];        
-        $q_track_id = $data['q_track_id'];
-        $q_option_no = $data['option_no'];
-        
-        $i = 0;
-        $length = count($q_option_no);        
-        while($i < $length)
+        $stop_exam = $data['stop_exam'];
+        if($data['q_track_id'] != null)
         {
-            $q_option_no[$i] = (int)$q_option_no[$i];
-            $i = $i+1;            
-        }
-        $sql = "UPDATE exam_papers_q_options
-                SET is_selected = 0
-                WHERE exam_track_id = $exam_track_id and q_track_id = $q_track_id ;";
-        
-        
-        try{
-            DB::beginTransaction();
-            DB::update(DB::raw($sql));
-            foreach($q_option_no as $value)
+             // return $data;                     
+            $q_track_id = $data['q_track_id'];
+            $q_option_no = $data['option_no'];
+            
+            $i = 0;
+            $length = count($q_option_no);        
+            while($i < $length)
             {
-                $sql2 = "UPDATE exam_papers_q_options 
-                            SET is_selected = 1
-                        WHERE exam_track_id = $exam_track_id and q_track_id = $q_track_id and q_option_no = $value;";
-                DB::update(DB::raw($sql2));                        
-            }                        
-            DB::commit();
-            // return response()->json(['success' => "Question's answer is stored successfully."]);
-        }
-        catch(Exception $e)
-        {
-            DB::rollback();
-            $errorCode = $e->errorInfo[1];
-            if($errorCode == 1062)
+                $q_option_no[$i] = (int)$q_option_no[$i];
+                $i = $i+1;            
+            }
+            $sql = "UPDATE exam_papers_q_options
+                    SET is_selected = 0
+                    WHERE exam_track_id = $exam_track_id and q_track_id = $q_track_id ;";
+                        
+            try{
+                DB::beginTransaction();
+                DB::update(DB::raw($sql));
+                foreach($q_option_no as $value)
+                {
+                    $sql2 = "UPDATE exam_papers_q_options 
+                                SET is_selected = 1
+                            WHERE exam_track_id = $exam_track_id and q_track_id = $q_track_id and q_option_no = $value;";
+                    DB::update(DB::raw($sql2));                        
+                }                        
+                DB::commit();
+                // return response()->json(['success' => "Question's answer is stored successfully."]);
+            }
+            catch(Exception $e)
             {
-                return "duplicate data insertion error";
-            }                         
-            return $e;
-        }
+                DB::rollback();
+                $errorCode = $e->errorInfo[1];
+                if($errorCode == 1062)
+                {
+                    return "duplicate data insertion error";
+                }                         
+                return $e;
+            }
+        }       
         if($stop_exam == 1)
         {
             $current_datetime = Carbon::parse( Carbon::now('Asia/Dhaka'))->format('Y-m-d H:i:s');
