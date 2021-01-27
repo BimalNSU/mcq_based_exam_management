@@ -45,6 +45,18 @@
 
 
 @section('content_area')
+@if(Session('status'))
+    <div class="alert alert-success">
+    {{ Session('status') }}
+    </div>
+@endif
+@if(Session('errors'))
+    <div class="alert alert-danger">
+    @foreach( Session('errors') as $value)
+        <p>{{ $value }}</p>
+    @endforeach
+    </div>
+@endif
 <div class="details">
     <div class="box box-info">
         <div class="box-header with-border">

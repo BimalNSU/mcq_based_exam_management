@@ -152,15 +152,13 @@ class TeacherController extends Controller
             'grading_method' => 'required|string|max:20'
         );
 
-
         // getting json data
         $data = $request->all();
-
         $error = Validator::make($request->all(), $rules);
-
         if($error->fails())
         {
-            return response()->json(['errors' => $error->errors()->all()]);
+            $errors = $error->errors()->all();
+            return redirect()->back()->with('errors', $errors );
         }
 
         $exam_id = (int)$request->exam_id;
@@ -200,7 +198,8 @@ class TeacherController extends Controller
             $errorCode = $e->errorInfo[1];                     
             return $e;
         }        
-        return response()->json(['success' => 'Data successfully updated']);
+        // return response()->json(['success' => 'Data successfully updated']);
+        return redirect()->back()->with('status', 'Exam data successfully updated');
     }
 
     public function delete_exam_of_course($exam_id)
