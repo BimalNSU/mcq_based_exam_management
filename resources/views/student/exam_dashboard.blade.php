@@ -53,7 +53,7 @@
             @foreach($value['options'] as $option)
             <div class="checkbox">
                 @if($value['is_selected'][$i] == 1)
-                <input type="checkbox" value="{{$value['q_option_numbers'][$i]}}" checked>{{$value['is_selected'][$i]}}
+                <input type="checkbox" value="{{$value['q_option_numbers'][$i]}}" checked>
                 @else
                 <input type="checkbox" value="{{$value['q_option_numbers'][$i]}}" >
                 @endif                
