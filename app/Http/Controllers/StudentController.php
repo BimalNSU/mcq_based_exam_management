@@ -24,6 +24,7 @@ class StudentController extends Controller
     public function exam_info(Request $request)
     {
         $exam_id = (int)$request->exam_id;
+        $user_id = auth()->user()->id;
         $sqlQuery = "SELECT exam_id, exam_name,exam_descriptions,
                     DATE(session_start) as session_start_date,TIME(session_start) as session_start_time,
                     DATE(session_end) as session_end_date,TIME(session_end) as session_end_time,
@@ -71,8 +72,50 @@ class StudentController extends Controller
         } 
         // dd($exam_id);
         // return array_push($exam_info['attempt_btn'], attempt_btn' => $attempt_now_btn);     
-        // dd($data);                        
-        return view('student.exam_info', ['exam_info' => $exam_info,'attempt_btn' => $attempt_btn, 'exam_id' => $exam_id ]);        
+        // dd($data);  
+        $sql3 = "SELECT r.exam_track_id, r.attempt_no, r.student_start, SUM(r.marks) as total_marks
+                FROM (select distinct q.exam_track_id,e.exam_id,e.attempt_no,e.student_id,e.student_start,q.q_track_id,
+                        (case
+                            #if it is blank question,  return marks = 0	
+                            when 0 = 	(select COUNT(q1.is_selected) 
+                                        from exam_papers_q_options q1
+                                        where q.exam_track_id = q1.exam_track_id and
+                                                q.q_track_id = q1.q_track_id and
+                                                q1.is_selected = 1
+                                        ) then 0
+                
+                            #if it is incorrect question,  return marks = -0.25
+                            when q.q_track_id in 	(select distinct q1.q_track_id
+                                                    from exam_papers_q_options q1
+                                                    where q.exam_track_id = q1.exam_track_id and
+                                                            q.q_track_id = q1.q_track_id and
+                                                            q1.q_track_id in 	(case
+                                                                                    when q1.is_selected=1 and
+                                                                                            q1.q_options not in (select a.answers
+                                                                                                                from exam_questions_answers a
+                                                                                                                where q1.q_track_id = a.q_track_id
+                                                                                                                ) 
+                                                                                                                then q1.q_track_id
+                                                                                    when q1.is_selected = 0 and
+                                                                                            q1.q_options in (select a.answers
+                                                                                                            from exam_questions_answers a
+                                                                                                            where q1.q_track_id = a.q_track_id
+                                                                                                            ) 
+                                                                                                            then q1.q_track_id
+                                                                                    else null
+                                                                                end
+                                                                                ) 
+                                                    ) then -0.25
+                            #else question is correct and return marks = 1
+                            else 1
+                        end) as marks
+                    from exam_assign e natural join exam_papers_q_options q
+                    where e.exam_id = $exam_id AND e.student_id = $user_id
+                    ) as r
+                GROUP BY r.exam_track_id ;";
+        $data3 = DB::select(DB::raw($sql3));
+        $data3 = json_decode(json_encode($data3),true);        
+        return view('student.exam_info', ['exam_info' => $exam_info,'attempt_btn' => $attempt_btn, 'exam_id' => $exam_id, 'exam_result' => $data3 ]);        
     }
     
     public function join_request_exam(Request $request)
@@ -301,24 +344,19 @@ class StudentController extends Controller
                     {
                         $data2[$i]->q_option_numbers = explode(",",$data2[$i]->q_option_numbers); //spliting all options as array and store in that object                
                         $data2[$i]->options = explode(",",$data2[$i]->options); //spliting all options as array and store in that object                
-                        $data2[$i]->is_selected = explode(",",$data2[$i]->is_selected); //spliting all options as array and store in that object                
-                        $i = $i+1;
+                        $temp_arr = explode(",",$data2[$i]->is_selected); //spliting all options as array and store in that object                
+                        $length_temp_arr = count($temp_arr);
+                        $j = 0;
+                        while($j < $length_temp_arr)
+                        {
+                            $temp_arr[$j] = (int)$temp_arr[$j]; //converting all is_selected value as integer
+                            $j = $j + 1;
+                        }
+                         $data2[$i]->is_selected = $temp_arr;   //store converted is_selected integer values
+                         $i = $i+1;
                     }        
                     $exam_data  = json_decode(json_encode($data2),true);
-                        // dd($exam_data);
-                        $i = 0;
-                        $j = 0;
-                    while ($i < $length)    
-                    {
-                        $length2 = count($exam_data[$i]['q_option_numbers']);
-                        while($j < $length2)
-                        {
-                            $exam_data[$i]['is_selected'][$j] = (int)$exam_data[$i]['is_selected'][$j]; 
-                            $j = $j +1;           
-                        }
-                        
-                        $i = $i+1;
-                    }
+ 
                     // dd($exam_data);
                     return view('student.exam_dashboard',[ 'exam_data' => $exam_data, 'exam_track_id' => $exam_track_id, 'remaining_time_in_seconds' => $remaining_time_in_seconds]);  
                 }
