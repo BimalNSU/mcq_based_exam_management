@@ -91,15 +91,17 @@ class StudentController extends Controller
                                                             q.q_track_id = q1.q_track_id and
                                                             q1.q_track_id in 	(case
                                                                                     when q1.is_selected=1 and
-                                                                                            q1.q_options not in (select a.answers
-                                                                                                                from exam_questions_answers a
-                                                                                                                where q1.q_track_id = a.q_track_id
+                                                                                            q1.q_options not in (select a.q_options
+                                                                                                                from exam_questions_details a
+                                                                                                                where a.is_answers = 1 AND 
+                                                                                                                    q1.q_track_id = a.q_track_id
                                                                                                                 ) 
                                                                                                                 then q1.q_track_id
                                                                                     when q1.is_selected = 0 and
-                                                                                            q1.q_options in (select a.answers
-                                                                                                            from exam_questions_answers a
-                                                                                                            where q1.q_track_id = a.q_track_id
+                                                                                            q1.q_options in (select a.q_options
+                                                                                                            from exam_questions_details a
+                                                                                                            where a.is_answers = 1 AND 
+                                                                                                                q1.q_track_id = a.q_track_id
                                                                                                             ) 
                                                                                                             then q1.q_track_id
                                                                                     else null
@@ -201,7 +203,7 @@ class StudentController extends Controller
                     DB::beginTransaction();
                     try{
                         $sql2 ="INSERT INTO exam_assign (exam_id,attempt_no,student_id,student_start)
-                                values($exam_id, $next_attempt,$student_id, '$current_datetime');";
+                                    values($exam_id, $next_attempt,$student_id, '$current_datetime');";
                         $data2 = DB::select(DB::raw($sql2));                    
                         $exam_track_id = DB::getPdo()->lastInsertId();   
                         
@@ -224,11 +226,11 @@ class StudentController extends Controller
                         {
                             $q_track_id = $data3[$i]['q_track_id'];
                             $sql4 = $sql4 . ",($exam_track_id, $q_track_id, $i+1 )";                         
-                            $i = $i+1;
+                            $i++;
                         }
                         DB::insert(DB::raw($sql4));    
                         $sql5 =" select e.q_track_id,GROUP_CONCAT(q_options) as options
-                                from exam_questions e natural join exam_questions_options
+                                from exam_questions e natural join exam_questions_details
                                 where exam_id = $exam_id
                                 GROUP BY e.q_track_id
                                 order by e.q_track_id";
@@ -248,7 +250,7 @@ class StudentController extends Controller
                         $option = $data5[0]['options'][0];
                         $q_track_id = $data5[0]['q_track_id'];
                         $sql6 = "INSERT INTO exam_papers_q_options (exam_track_id,q_track_id,q_option_no,q_options,is_selected)
-                                values($exam_track_id, $q_track_id, 1 ,'$option', 0)";
+                                    values($exam_track_id, $q_track_id, 1 ,'$option', 0)";
                         $i=0;
                         while($i < $length)
                         {
@@ -264,9 +266,9 @@ class StudentController extends Controller
                                 $q_track_id = $data5[$i]['q_track_id'];
                                 $q_option_no = $j +1;
                                 $sql6 = $sql6 . ",($exam_track_id, $q_track_id, $q_option_no , '$opiton', 0)";
-                                $j = $j +1;
+                                $j++;
                             }
-                            $i =$i +1;                
+                            $i++;                
                         }            
                         DB::insert(DB::raw($sql6));
 
@@ -291,8 +293,8 @@ class StudentController extends Controller
     {
         $exam_track_id = $request->exam_track_id;
         $sql =" select session_start,session_end,time_limit,student_id,student_start,student_end
-                    from exams e natural join exam_assign
-                    where exam_track_id = $exam_track_id;";
+                from exams e natural join exam_assign
+                where exam_track_id = $exam_track_id;";
 
         $data = DB::select(DB::raw($sql));
         $data  = json_decode(json_encode($data),true);
@@ -325,16 +327,18 @@ class StudentController extends Controller
                 if($remaining_time_in_seconds > 0)
                 {
                     $sql2 ="select m.*    
-                        from (select t.q_track_id,x.q_serial_no, y.q_text, t.q_option_numbers, t.options, t.is_selected
-                                from (SELECT exam_track_id, q_track_id,
-                                        GROUP_CONCAT(q_option_no) AS q_option_numbers,
+                        from    (select t.q_track_id,x.q_serial_no, y.q_text, t.q_option_numbers, t.options, t.is_selected
+                                from    (SELECT exam_track_id, q_track_id,
+                                            GROUP_CONCAT(q_option_no) AS q_option_numbers,
                                             GROUP_CONCAT(q_options) AS options,
                                             GROUP_CONCAT(is_selected) AS is_selected
-                                    FROM exam_papers_q_options
-                                    WHERE exam_track_id = $exam_track_id
-                                    GROUP BY exam_track_id, q_track_id
-                                    order by q_option_no) as t natural join exam_papers x  join exam_questions y
-                                    ON x.q_track_id = y.q_track_id) as m                                            
+                                        FROM exam_papers_q_options
+                                        WHERE exam_track_id = $exam_track_id
+                                        GROUP BY exam_track_id, q_track_id
+                                        order by q_option_no
+                                        ) as t natural join exam_papers x  join exam_questions y
+                                                ON x.q_track_id = y.q_track_id
+                                ) as m                                            
                         order by m.q_serial_no";
                     $data2 = DB::select(DB::raw($sql2));            
                     // dd($data7);
@@ -447,15 +451,17 @@ class StudentController extends Controller
                                                             q.q_track_id = q1.q_track_id and
                                                             q1.q_track_id in 	(case
                                                                                     when q1.is_selected=1 and
-                                                                                            q1.q_options not in (select a.answers
-                                                                                                                from exam_questions_answers a
-                                                                                                                where q1.q_track_id = a.q_track_id
+                                                                                            q1.q_options not in (select a.q_options
+                                                                                                                from exam_questions_details a
+                                                                                                                where a.is_answers = 1 AND 
+                                                                                                                    q1.q_track_id = a.q_track_id
                                                                                                                 ) 
                                                                                                                 then q1.q_track_id
                                                                                     when q1.is_selected = 0 and
-                                                                                            q1.q_options in (select a.answers
-                                                                                                            from exam_questions_answers a
-                                                                                                            where q1.q_track_id = a.q_track_id
+                                                                                            q1.q_options in (select a.q_options
+                                                                                                            from exam_questions_details a
+                                                                                                            where a.is_answers = 1 AND
+                                                                                                                q1.q_track_id = a.q_track_id
                                                                                                             ) 
                                                                                                             then q1.q_track_id
                                                                                     else null
@@ -473,7 +479,7 @@ class StudentController extends Controller
         $data1  = json_decode(json_encode($data1),true);
         $data1 = $data1[0];
         // dd($data1);
-        $sql2 ="SELECT r.*, GROUP_CONCAT(a.answers) as answers
+        $sql2 ="SELECT r.*, GROUP_CONCAT(a.q_options) as answers
                 FROM    (SELECT t.*, x.q_serial_no, y.q_text
                         FROM    (select q.exam_track_id,q.q_track_id,
                                     GROUP_CONCAT(q.q_option_no) AS q_option_no,
@@ -495,15 +501,17 @@ class StudentController extends Controller
                                                                         q.q_track_id = q1.q_track_id and
                                                                         q1.q_track_id in 	(case
                                                                                                 when q1.is_selected=1 and
-                                                                                                        q1.q_options not in (select a.answers
-                                                                                                                            from exam_questions_answers a
-                                                                                                                            where q1.q_track_id = a.q_track_id
+                                                                                                        q1.q_options not in (select a.q_options
+                                                                                                                            from exam_questions_details a
+                                                                                                                            where a.is_answers = 1 AND 
+                                                                                                                                q1.q_track_id = a.q_track_id
                                                                                                                             ) 
                                                                                                                             then q1.q_track_id
                                                                                                 when q1.is_selected = 0 and
-                                                                                                        q1.q_options in (select a.answers
-                                                                                                                        from exam_questions_answers a
-                                                                                                                        where q1.q_track_id = a.q_track_id
+                                                                                                        q1.q_options in (select a.q_options
+                                                                                                                        from exam_questions_details a
+                                                                                                                        where a.is_answers = 1 AND 
+                                                                                                                            q1.q_track_id = a.q_track_id
                                                                                                                         ) 
                                                                                                                         then q1.q_track_id
                                                                                                 else null
@@ -518,7 +526,9 @@ class StudentController extends Controller
                                 group by q.q_track_id
                                 ) as t natural join exam_papers x  join exam_questions y
                                         ON x.q_track_id = y.q_track_id
-                        ) as r NATURAL JOIN exam_questions_answers a
+                        ) as r JOIN exam_questions_details a
+                                ON r.q_track_id = a.q_track_id
+                WHERE a.is_answers = 1                        
                 GROUP BY a.q_track_id
                 ORDER BY r.q_serial_no asc";
         $data2 = DB::select(DB::raw($sql2));
