@@ -425,4 +425,114 @@ class StudentController extends Controller
             // return view('student.index');
         }                
     }
+    
+    public function exam_review(Request $request)
+    {
+        $exam_track_id = (int)$request->exam_track_id;
+        $sql1 = "SELECT e.exam_track_id,e.exam_id,e.attempt_no,e.student_id, e.student_start, SUM(r.marks) as total_marks
+                FROM (select q.exam_track_id, q.q_track_id,
+                        (case
+                            #if it is blank question,  return marks = 0	
+                            when 0 = 	(select COUNT(q1.is_selected) 
+                                        from exam_papers_q_options q1
+                                        where q.exam_track_id = q1.exam_track_id and
+                                                q.q_track_id = q1.q_track_id and
+                                                q1.is_selected = 1
+                                        ) then 0
+                
+                            #if it is incorrect question,  return marks = -0.25
+                            when q.q_track_id in 	(select distinct q1.q_track_id
+                                                    from exam_papers_q_options q1
+                                                    where q.exam_track_id = q1.exam_track_id and
+                                                            q.q_track_id = q1.q_track_id and
+                                                            q1.q_track_id in 	(case
+                                                                                    when q1.is_selected=1 and
+                                                                                            q1.q_options not in (select a.answers
+                                                                                                                from exam_questions_answers a
+                                                                                                                where q1.q_track_id = a.q_track_id
+                                                                                                                ) 
+                                                                                                                then q1.q_track_id
+                                                                                    when q1.is_selected = 0 and
+                                                                                            q1.q_options in (select a.answers
+                                                                                                            from exam_questions_answers a
+                                                                                                            where q1.q_track_id = a.q_track_id
+                                                                                                            ) 
+                                                                                                            then q1.q_track_id
+                                                                                    else null
+                                                                                end
+                                                                                ) 
+                                                    ) then -0.25
+                            #else question is correct and return marks = 1
+                            else 1
+                        end) as marks
+                    from exam_papers_q_options q
+                    WHERE q.exam_track_id = $exam_track_id
+                    GROUP BY q.q_track_id
+                    ) as r natural join exam_assign e ;";
+        $data1 = DB::select(DB::raw($sql1));
+        $data1  = json_decode(json_encode($data1),true);
+        $data1 = $data1[0];
+        // dd($data1);
+        $sql2 ="SELECT r.*, GROUP_CONCAT(a.answers) as answers
+                FROM    (SELECT t.*, x.q_serial_no, y.q_text
+                        FROM    (select q.exam_track_id,q.q_track_id,
+                                    GROUP_CONCAT(q.q_option_no) AS q_option_no,
+                                    GROUP_CONCAT(q.q_options) AS q_options,
+                                    GROUP_CONCAT(q.is_selected) AS is_selected,
+                                    (case
+                                        #if it is blank question,  return marks = 0	
+                                        when 0 = 	(select COUNT(q1.is_selected) 
+                                                    from exam_papers_q_options q1
+                                                    where q.exam_track_id = q1.exam_track_id and
+                                                            q.q_track_id = q1.q_track_id and
+                                                            q1.is_selected = 1
+                                                    ) then 0
+
+                                        #if it is incorrect question,  return marks = -0.25
+                                        when q.q_track_id in 	(select distinct q1.q_track_id
+                                                                from exam_papers_q_options q1
+                                                                where q.exam_track_id = q1.exam_track_id and
+                                                                        q.q_track_id = q1.q_track_id and
+                                                                        q1.q_track_id in 	(case
+                                                                                                when q1.is_selected=1 and
+                                                                                                        q1.q_options not in (select a.answers
+                                                                                                                            from exam_questions_answers a
+                                                                                                                            where q1.q_track_id = a.q_track_id
+                                                                                                                            ) 
+                                                                                                                            then q1.q_track_id
+                                                                                                when q1.is_selected = 0 and
+                                                                                                        q1.q_options in (select a.answers
+                                                                                                                        from exam_questions_answers a
+                                                                                                                        where q1.q_track_id = a.q_track_id
+                                                                                                                        ) 
+                                                                                                                        then q1.q_track_id
+                                                                                                else null
+                                                                                            end
+                                                                                            ) 
+                                                                ) then -0.25
+                                        #else question is correct and return marks = 1
+                                        else 1
+                                    end) as marks
+                                from exam_papers_q_options q
+                                where q.exam_track_id = $exam_track_id
+                                group by q.q_track_id
+                                ) as t natural join exam_papers x  join exam_questions y
+                                        ON x.q_track_id = y.q_track_id
+                        ) as r NATURAL JOIN exam_questions_answers a
+                GROUP BY a.q_track_id
+                ORDER BY r.q_serial_no asc";
+        $data2 = DB::select(DB::raw($sql2));
+        $length = count($data2);
+        $i = 0;
+        while ($i < $length)    
+        {
+            $data2[$i]->q_option_no = explode(",",$data2[$i]->q_option_no); //spliting all options as array and store in that object                
+            $data2[$i]->q_options = explode(",",$data2[$i]->q_options); //spliting all options as array and store in that object                            
+            $data2[$i]->is_selected = explode(",",$data2[$i]->is_selected); //spliting all options as array and store in that object 
+            $i = $i+1;
+        }        
+        $data2  = json_decode(json_encode($data2),true);
+        // dd($data2);
+        return view('student.exam_review',['exam_info' => $data1, 'exam_data' => $data2]);  
+    }
 }
