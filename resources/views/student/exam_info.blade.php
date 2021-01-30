@@ -23,7 +23,15 @@
 				padding:10px 0px 10px 10px; 
 				border-radius:15px 15px 0px 0px;
 				}
-				
+			.qbody{
+				width:900px;				
+				background-color:white;
+				margin:auto;   
+				margin-top: 10px;         				
+				padding:10px 0px 10px 10px; 
+				border-radius:15px 15px 0px 0px;
+            	}
+
 			}
 
     </style>
@@ -45,40 +53,35 @@
 
 	<br>
 	@if($exam_result)
-	<div class="row">
-		<div class="col-xs-12">
-			<div class="box">
-				<div class="box-header">
-					<h3 class="box-title">Attempt list</h3>
-				</div>
-				<!-- /.box-header -->
-				<div class="box-body table-responsive no-padding">
-					<table class="table table-hover" id="">
-						<tr>
-							<th>Attempt no</th>
-							<th>Attempt start</th>
-							<th>Total marks</th>
-							<th></th>
-						</tr>
-						@foreach($exam_result as $value)
-							<tr>
-								<td>{{$value['attempt_no']}}</td>
-								<td>{{$value['total_marks']}}</td>
-								<td>
-									<a href= "{{url('/teacher/exam/review',$value['exam_track_id'])}}"> 
-										<button type="button" class="btn btn-success">
-											Review
-										</button>
-									</a>                          
-								</td>
-							</tr>
-						@endforeach                   
-					</table>
-				</div>
-				<!-- /.box-body -->
-			</div>
-			<!-- /.box -->
+	<div class="qbody">
+		<div class="box-header">
+			<h3 class="box-title">Attempt list</h3>
 		</div>
+		<!-- /.box-header -->
+		<div class="box-body table-responsive no-padding">
+			<table class="table table-hover">
+				<tr>
+					<th>Attempt no</th>
+					<th>Total marks</th>
+					<th>Total marks</th>
+					<th></th>
+				</tr>
+				@foreach($exam_result as $value)
+					<tr>
+						<td>{{$value['attempt_no']}}</td>
+						<td>{{$value['total_marks']}}</td>
+						<td>
+							<a href= "{{url('/student/exam/review',$value['exam_track_id'])}}"> 
+								<button type="button" class="btn btn-success">
+									Review
+								</button>
+							</a>                          
+						</td>
+					</tr>
+				@endforeach                   
+			</table>
+		</div>
+		<!-- /.box-body -->
 	</div>
 	@endif
 @endsection()
