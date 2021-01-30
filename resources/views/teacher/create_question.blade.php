@@ -39,7 +39,7 @@
             <div class="form-group row">
                 <label for="inputEmail3" class="col-sm-2 control-label">question no</label>
                 <div class="col-sm-10">
-                <textarea class="form-control" rows="2" id="q_serial_no" placeholder="write your question no" style="resize: none"></textarea>
+                <textarea class="form-control" rows="2" id="q_no" placeholder="write your question no" style="resize: none"></textarea>
                 </div>
             </div>
             <div class="form-group row">
@@ -52,7 +52,7 @@
                 <label class="col-sm-2 control-label">Option 1</label>
                 <div class="input-group">
                     <span class="input-group-addon">                            
-                        <input type="checkbox" name="answers[]">
+                        <input type="checkbox" name="is_answers[]">
                     </span>
                     <textarea class="form-control" name="options[]" rows="2" placeholder="write your options" style="resize: none"></textarea>
                 </div>
@@ -61,7 +61,7 @@
                 <label class="col-sm-2 control-label">Option 2</label>
                 <div class="input-group">
                     <span class="input-group-addon">                            
-                        <input type="checkbox" name="answers[]">
+                        <input type="checkbox" name="is_answers[]">
                     </span>
                     <textarea class="form-control" name="options[]" rows="2" placeholder="write your options" style="resize: none"></textarea>
                 </div>
@@ -70,7 +70,7 @@
                 <label class="col-sm-2 control-label">Option 3</label>
                 <div class="input-group">
                     <span class="input-group-addon">                            
-                        <input type="checkbox" name="answers[]">
+                        <input type="checkbox" name="is_answers[]">
                     </span>
                     <textarea class="form-control" name="options[]" rows="2" placeholder="write your options" style="resize: none"></textarea>
                 </div>
@@ -79,7 +79,7 @@
                 <label class="col-sm-2 control-label">Option 4</label>
                 <div class="input-group">
                     <span class="input-group-addon">                            
-                        <input type="checkbox" name="answers[]">
+                        <input type="checkbox" name="is_answers[]">
                     </span>
                     <textarea class="form-control" name="options[]" rows="2" placeholder="write your options" style="resize: none"></textarea>
                 </div>
@@ -103,31 +103,32 @@
         // alert("last question no: "+ last_q_object.attr("id"));
         let json_object = Object();
         // json_object.q_no = last_q_object.attr("id");    //store question's id
-        let q_serial_no = $("#q_serial_no").val();
+        let q_no = $("#q_no").val();
         let q_text = $("#q_text").val();
-        json_object.question_no = q_serial_no;
+        json_object.question_no = q_no;
         json_object.question_text = q_text;
         
         let options = [];
-        let answers = [];
+        let is_answers = [];
         let json_array = [];
         $.each($("div textarea[name='options[]']"),function(index){                
             let option = $(this).val();
             if(option != "")
             {
                 options[index] = option;   //store one by one all options in array
+                let is_answer = 0; // it means by default the option is not the answer
                 // console.log(option);
                 if($(this).siblings("span").find('input[type="checkbox"]').prop("checked") == true)
                 {
-                    let answer = option;
-                    // alert(answer);
-                    answers.push(answer);    //store one by one all answers in array               
+                    is_answer = 1; //it means correct option of that question
+                    // alert(answer);                    
                 }
+                is_answers.push(is_answer);    //store one by one all answers in array               
             }
             
         });
         json_object.options = options;
-        json_object.answers = answers;
+        json_object.answers = is_answers;
         let exam_id = {!! json_encode($exam_id) !!};    //collect exam_id which was sent during loading this page
         $.post("{{ route('createQuestion', [':exam_id']) }}".replace(':exam_id', exam_id) , {data: JSON.stringify(json_object) } , function(data){
             let html = '';
