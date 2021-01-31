@@ -19,12 +19,12 @@ It is a web application using laravel inspire from Bangldesh Medical Exam. It ha
 - Instant exam result shows after attempt.
 - Real time exam question's answers store.
 
-This is a demo project
+This is a demo project.
 
 ## Use case
-
+![alt text](https://github.com/BimalNSU/mcq_based_exam_management/blob/master/diagrams/use_case.jpg?raw=true)
 ## ER diagram
-
+![alt text](https://github.com/BimalNSU/mcq_based_exam_management/blob/master/diagrams/er_diagram.png?raw=true)
 ## Database physical diagram
-
+![alt text](https://github.com/BimalNSU/mcq_based_exam_management/blob/master/diagrams/physical_diagram.png?raw=true)
 ## Challeges
