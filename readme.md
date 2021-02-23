@@ -7,7 +7,7 @@ It is a web application using laravel inspire from Bangldesh Medical Exam. It ha
 - Each question may have multiple answers.
 - Exam Attempt Validation.
 - Anti-marking policy like for incorrect answer mark = -0.25 . 
-- Question Suffle on each attempt.
+- Question Shuffle on each attempt.
 - Exam Review on each attempt.
 - Instant exam result shows after attempt.
 - Real time exam question's answers store.
