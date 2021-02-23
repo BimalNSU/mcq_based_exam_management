@@ -199,7 +199,8 @@ class TeacherController extends Controller
             return $e;
         }        
         // return response()->json(['success' => 'Data successfully updated']);
-        return redirect()->back()->with('status', 'Exam data successfully updated');
+        // return redirect()->back()->with('status', 'Exam data successfully updated'); //this is working
+         return back()->with('status', 'Exam data successfully updated');
     }
 
     public function delete_exam_of_course($exam_id)
