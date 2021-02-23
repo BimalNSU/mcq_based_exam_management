@@ -45,6 +45,18 @@
 
 
 @section('content_area')
+@if(Session('status'))
+    <div class="alert alert-success">
+    {{ Session('status') }}
+    </div>
+@endif
+@if(Session('errors'))
+    <div class="alert alert-danger">
+    @foreach( Session('errors') as $value)
+        <p>{{ $value }}</p>
+    @endforeach
+    </div>
+@endif
 <div class="details">
     <div class="box box-info">
         <div class="box-header with-border">
@@ -118,7 +130,7 @@
             <div class="form-group row">
                 <label for="inputPassword3" class="col-sm-2 control-label">Time limit</label>
                 <div class="col-sm-3">
-                    <input class="form-control js-input-absint" type="number" name="time_limit" step="1" min="10"  max="150" value="{{$data['time_limit'] }}" placeholder="enter time limit in minutes">
+                    <input class="form-control js-input-absint" type="number" name="time_limit" step="1" min="1"  max="150" value="{{$data['time_limit'] }}" placeholder="enter time limit in minutes">
                 </div>
             </div>				
 

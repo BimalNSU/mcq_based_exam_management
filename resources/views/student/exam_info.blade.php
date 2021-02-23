@@ -23,7 +23,15 @@
 				padding:10px 0px 10px 10px; 
 				border-radius:15px 15px 0px 0px;
 				}
-				
+			.qbody{
+				width:900px;				
+				background-color:white;
+				margin:auto;   
+				margin-top: 10px;         				
+				padding:10px 0px 10px 10px; 
+				border-radius:15px 15px 0px 0px;
+            	}
+
 			}
 
     </style>
@@ -42,6 +50,40 @@
         <h4> Time limits: {{$exam_info['time_limit']}} minutes</h4> 
         <div id='attempt'></div>
     </div>
+
+	<br>
+	@if($exam_result)
+	<div class="qbody">
+		<div class="box-header">
+			<h3 class="box-title">Attempt list</h3>
+		</div>
+		<!-- /.box-header -->
+		<div class="box-body table-responsive no-padding">
+			<table class="table table-hover">
+				<tr>
+					<th>Attempt no</th>
+					<th>Total marks</th>
+					<th>Total marks</th>
+					<th></th>
+				</tr>
+				@foreach($exam_result as $value)
+					<tr>
+						<td>{{$value['attempt_no']}}</td>
+						<td>{{$value['total_marks']}}</td>
+						<td>
+							<a href= "{{url('/student/exam/review',$value['exam_track_id'])}}"> 
+								<button type="button" class="btn btn-success">
+									Review
+								</button>
+							</a>                          
+						</td>
+					</tr>
+				@endforeach                   
+			</table>
+		</div>
+		<!-- /.box-body -->
+	</div>
+	@endif
 @endsection()
 
 
@@ -49,9 +91,12 @@
  <script>
 	let attempt_btn = {!! json_encode($attempt_btn) !!};
 	let exam_id = {!! json_encode($exam_id) !!};
-	// console.log(attempt_btn);
+	let data3 = {!! json_encode($exam_result) !!};
+	
+	console.log(data3);
 	$('#attempt').html(attempt_btn);
-	document.getElementById("link").href = '/mcq_based_exam/public/student/exam/request/'+exam_id;
+	// document.getElementById("link").href = '/mcq_based_exam/public/student/exam/request/'+exam_id;
+	document.getElementById("link").href = "{{ route('requestExam', [':exam_id']) }}".replace(':exam_id', exam_id);
  </script>
  
 @endsection()

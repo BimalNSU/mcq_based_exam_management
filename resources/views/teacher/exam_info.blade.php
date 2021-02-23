@@ -73,7 +73,7 @@
                     </tr>
                     @foreach($data['questions'] as $value)
                         <tr>
-                            <td>{{$value['q_serial_no']}}</td>
+                            <td>{{$value['q_no']}}</td>
                             <td>{{$value['q_text']}}</td>
                             <td>
                                 <a href= "{{route('questionEditView', [$data['exam_info']['exam_id'],$value['q_track_id'] ] )}}"> 

@@ -39,9 +39,9 @@
     <!-- Logo -->
     <a href="{{ asset('FrontEnd') }}/index2.html" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
-      <span class="logo-mini"><b>A</b>LT</span>
+      <span class="logo-mini"><b>M</b>E</span>
       <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>Admin</b>LTE</span>
+      <span class="logo-lg"><b>MCQ </b>EXAM</span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
@@ -59,34 +59,20 @@
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="{{ asset('FrontEnd') }}/dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
+              <img src="{{ asset('FrontEnd') }}/dist/img/avatar5.png" class="user-image" alt="User Image">
               <span class="hidden-xs">{{ Auth::user()->name }}</span>
             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
               <li class="user-header">
-                <img src="{{ asset('FrontEnd') }}/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                <img src="{{ asset('FrontEnd') }}/dist/img/avatar5.png" class="img-circle" alt="User Image">
 
                 <p>
-                {{ Auth::user()->name }} - Web Developer
-                  <small>Member since Nov. 2012</small>
+                {{ Auth::user()->name }} - {{ Auth::user()->role}}
+                  <small></small>
                 </p>
               </li>
-              <!-- Menu Body -->
-              <li class="user-body">
-                <div class="row">
-                  <div class="col-xs-4 text-center">
-                    <a href="#">Followers</a>
-                  </div>
-                  <div class="col-xs-4 text-center">
-                    <a href="#">Sales</a>
-                  </div>
-                  <div class="col-xs-4 text-center">
-                    <a href="#">Friends</a>
-                  </div>
-                </div>
-                <!-- /.row -->
-              </li>
+
               <!-- Menu Footer-->
               <li class="user-footer">
                 <div class="pull-left">
@@ -119,22 +105,7 @@
       
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu" data-widget="tree">
-    
-        <li class="active">
-          <a href="{{ url('/dasboard') }}">
-            <i class="fa fa-dashboard"></i> <span>Dashboard</span>
-          </a>
-        </li>
-        <li class="">
-          <a href="{{ url('/teacher/grade') }}">
-            <i class="fa fa-dashboard"></i> <span>Grade</span>
-          </a>
-        </li>
-        <li class="">
-          <a href="{{ url('/teacher/question_bank') }}">
-            <i class="fa fa-dashboard"></i> <span>Question Bank</span>
-          </a>
-        </li>
+
       </ul>
     </section>
     <!-- /.sidebar -->
@@ -146,15 +117,6 @@
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-      <h1>
-        Blank page
-        <small>it all starts here</small>
-      </h1>
-      <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li><a href="#">Examples</a></li>
-        <li class="active">Blank page</li>
-      </ol>
     </section>
 
     <!-- Main content -->
@@ -168,11 +130,7 @@
   <!-- /.content-wrapper -->
 
   <footer class="main-footer">
-    <div class="pull-right hidden-xs">
-      <b>Version</b> 2.4.0
-    </div>
-    <strong>Copyright &copy; 2014-2016 <a href="https://adminlte.io">Almsaeed Studio</a>.</strong> All rights
-    reserved.
+    
   </footer>
 
 <!-- ./wrapper -->
